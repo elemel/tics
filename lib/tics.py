@@ -51,6 +51,8 @@ def init():
     glEnable(GL_DEPTH_TEST)
     glDepthFunc(GL_LEQUAL)
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 def draw(image):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -58,15 +60,19 @@ def draw(image):
     glTranslatef(-0.5, -0.5, -1.5)
     image.draw()
 
+def generate_triangle(random=random):
+    return Triangle((random.random() for _ in xrange(6)) for _ in xrange(3))
+
+def generate_image(random=random):
+    return Image([generate_triangle()])
+
 def main():
     resolution = 500, 500
     pygame.init()
     pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
     resize(resolution)
     init()
-    image = Image([Triangle([[1, 0, 0, 1, 1, 0],
-                             [0, 1, 0, 1, 0, 1],
-                             [0, 0, 1, 1, 0, 0]])])
+    image = generate_image()
     while True:
         event = pygame.event.poll()
         if (event.type == QUIT or
