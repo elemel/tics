@@ -47,17 +47,13 @@ def resize((width, height)):
 def init():
     glShadeModel(GL_SMOOTH)
     glClearColor(0, 0, 0, 0)
-    glClearDepth(1)
-    glEnable(GL_DEPTH_TEST)
-    glDepthFunc(GL_LEQUAL)
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 def draw(image):
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glClear(GL_COLOR_BUFFER_BIT)
     glLoadIdentity()
-    glTranslatef(-0.5, -0.5, -1.5)
+    glTranslatef(-0.5, -0.5, -1)
     image.draw()
 
 def generate_triangle(random=random):
