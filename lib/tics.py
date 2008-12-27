@@ -63,8 +63,8 @@ def draw(image):
 def generate_triangle(random=random):
     return Triangle((random.random() for _ in xrange(6)) for _ in xrange(3))
 
-def generate_image(random=random):
-    return Image([generate_triangle()])
+def generate_image(triangle_count, random=random):
+    return Image([generate_triangle() for _ in xrange(triangle_count)])
 
 def main():
     resolution = 500, 500
@@ -72,7 +72,7 @@ def main():
     pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
     resize(resolution)
     init()
-    image = generate_image()
+    image = generate_image(50)
     while True:
         event = pygame.event.poll()
         if (event.type == QUIT or
