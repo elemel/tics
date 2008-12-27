@@ -16,8 +16,8 @@ class Triangle(object):
     def draw(self):
         glBegin(GL_TRIANGLES)
         for r, g, b, a, x, y in self:
-            glColor4f(r, g, b, a)
-            glVertex2f(-1 + 2 * x, -1 + 2 * y)
+            glColor(r, g, b, a)
+            glVertex(-1 + 2 * x, -1 + 2 * y)
         glEnd()
         
     def __iter__(self):
