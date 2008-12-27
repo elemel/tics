@@ -2,10 +2,37 @@
 
 # Adapted from Paul Furber's Python version of Nehe's OpenGL Lesson 3.
 
+from __future__ import division
+
 from OpenGL.GL import *
 from OpenGL.GLU import *
-import pygame
+import pygame, random
 from pygame.locals import *
+
+class Triangle(object):
+    def __init__(self, corners):
+        self.__corners = tuple(tuple(c) for c in corners)
+
+    def draw(self):
+        glBegin(GL_TRIANGLES)
+        for r, g, b, a, x, y in self:
+            glColor4f(r, g, b, a)
+            glVertex2f(x, y)
+        glEnd()
+        
+    def __iter__(self):
+        return iter(self.__corners)
+
+class Image(object):
+    def __init__(self, triangles):
+        self.__triangles = tuple(Triangle(t) for t in triangles)
+
+    def draw(self):
+        for triangle in self.__triangles:
+            triangle.draw()
+
+    def __iter__(self):
+        return iter(self.__triangles)
 
 def resize((width, height)):
     if height == 0:
@@ -13,30 +40,23 @@ def resize((width, height)):
     glViewport(0, 0, width, height)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(45.0, 1.0 * width / height, 0.1, 100.0)
+    gluPerspective(45, width / height, 0.1, 100)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
 def init():
     glShadeModel(GL_SMOOTH)
-    glClearColor(0.0, 0.0, 0.0, 0.0)
-    glClearDepth(1.0)
+    glClearColor(0, 0, 0, 0)
+    glClearDepth(1)
     glEnable(GL_DEPTH_TEST)
     glDepthFunc(GL_LEQUAL)
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
 
-def draw():
+def draw(image):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
-    glTranslatef(0.0, 0.0, -3.0)
-    glBegin(GL_TRIANGLES)
-    glColor3f(1.0, 0.0, 0.0)
-    glVertex3f(0.0, 1.0, 0.0)
-    glColor3f(0.0, 1.0, 0.0)
-    glVertex3f(-1.0, -1.0, 0)
-    glColor3f(0.0, 0.0, 1.0)
-    glVertex3f(1.0, -1.0, 0)
-    glEnd()
+    glTranslatef(-0.5, -0.5, -1.5)
+    image.draw()
 
 def main():
     resolution = 500, 500
@@ -44,12 +64,15 @@ def main():
     pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
     resize(resolution)
     init()
+    image = Image([Triangle([[1, 0, 0, 1, 1, 0],
+                             [0, 1, 0, 1, 0, 1],
+                             [0, 0, 1, 1, 0, 0]])])
     while True:
         event = pygame.event.poll()
         if (event.type == QUIT or
             (event.type == KEYDOWN and event.key == K_ESCAPE)):
             break
-        draw()
+        draw(image)
         pygame.display.flip()
 
 if __name__ == '__main__':
