@@ -6,7 +6,7 @@ from __future__ import division
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
-import pygame, random
+import pygame, random, sys
 from pygame.locals import *
 
 class Triangle(object):
@@ -17,7 +17,7 @@ class Triangle(object):
         glBegin(GL_TRIANGLES)
         for r, g, b, a, x, y in self:
             glColor4f(r, g, b, a)
-            glVertex2f(x, y)
+            glVertex2f(-1 + 2 * x, -1 + 2 * y)
         glEnd()
         
     def __iter__(self):
@@ -34,16 +34,6 @@ class Image(object):
     def __iter__(self):
         return iter(self.__triangles)
 
-def resize((width, height)):
-    if height == 0:
-        height = 1
-    glViewport(0, 0, width, height)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    gluPerspective(45, width / height, 0.1, 100)
-    glMatrixMode(GL_MODELVIEW)
-    glLoadIdentity()
-
 def init():
     glShadeModel(GL_SMOOTH)
     glClearColor(0, 0, 0, 0)
@@ -52,8 +42,6 @@ def init():
 
 def draw(image):
     glClear(GL_COLOR_BUFFER_BIT)
-    glLoadIdentity()
-    glTranslatef(-0.5, -0.5, -1)
     image.draw()
 
 def generate_triangle(random=random):
@@ -63,10 +51,13 @@ def generate_image(triangle_count, random=random):
     return Image([generate_triangle() for _ in xrange(triangle_count)])
 
 def main():
-    resolution = 500, 500
+    args = sys.argv[1:]
+    if len(args) != 1:
+        sys.stderr.write("Usage: tics <image>\n")
+        sys.exit(1)
     pygame.init()
-    pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
-    resize(resolution)
+    original = pygame.image.load(args[0]).convert(24)
+    pygame.display.set_mode(original.get_size(), OPENGL | DOUBLEBUF)
     init()
     image = generate_image(50)
     while True:
