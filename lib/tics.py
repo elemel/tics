@@ -50,14 +50,21 @@ def generate_triangle(random=random):
 def generate_image(triangle_count, random=random):
     return Image([generate_triangle() for _ in xrange(triangle_count)])
 
+def get_pixels(surface):
+    width, height = surface.get_size()
+    return [[surface.get_at((x, height - y - 1)) for x in xrange(width)]
+             for y in xrange(height)]
+
 def main():
     args = sys.argv[1:]
     if len(args) != 1:
         sys.stderr.write("Usage: tics <image>\n")
         sys.exit(1)
     pygame.init()
-    original = pygame.image.load(args[0]).convert(24)
-    pygame.display.set_mode(original.get_size(), OPENGL | DOUBLEBUF)
+    original = pygame.image.load(args[0])
+    width, height = size = original.get_size()
+    original_pixels = get_pixels(original)
+    pygame.display.set_mode(size, OPENGL | DOUBLEBUF)
     init()
     image = generate_image(50)
     while True:
@@ -67,6 +74,7 @@ def main():
             break
         draw(image)
         pygame.display.flip()
+        image_pixels = glReadPixels(0, 0, width, height, GL_RGBA, GL_BYTE)
 
 if __name__ == '__main__':
     main()
