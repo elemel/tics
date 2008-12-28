@@ -8,6 +8,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame, random, sys
 from pygame.locals import *
+from itertools import izip
 
 class Triangle(object):
     def __init__(self, corners):
@@ -40,7 +41,7 @@ def init():
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-def draw(image):
+def redraw(image):
     glClear(GL_COLOR_BUFFER_BIT)
     image.draw()
 
@@ -52,8 +53,22 @@ def generate_image(triangle_count, random=random):
 
 def get_pixels(surface):
     width, height = surface.get_size()
-    return [[surface.get_at((x, height - y - 1)) for x in xrange(width)]
-             for y in xrange(height)]
+    return [[surface.get_at((x, height - y - 1)) for y in xrange(height)]
+             for x in xrange(width)]
+
+def get_lengths(pixels):
+    return len(pixels), len(pixels[0]), len(pixels[0][0])
+
+def get_fitness(image_pixels, goal_pixels):
+    """return the average squared distance as a number in the range [0, 1]"""
+    height, width, depth = get_lengths(image_pixels)
+    assert (height, width, depth) == get_lengths(goal_pixels)
+    result = 0
+    for image_row, goal_row in izip(image_pixels, goal_pixels):
+        for image_pixel, goal_pixel in izip(image_row, goal_row):
+            for image_comp, goal_comp in izip(image_pixel, goal_pixel):
+                result += (image_comp - goal_comp) ** 2
+    return result / (height * width * depth) / 255 ** 2
 
 def main():
     args = sys.argv[1:]
@@ -61,20 +76,22 @@ def main():
         sys.stderr.write("Usage: tics <image>\n")
         sys.exit(1)
     pygame.init()
-    original = pygame.image.load(args[0])
-    width, height = size = original.get_size()
-    original_pixels = get_pixels(original)
+    goal_surface = pygame.image.load(args[0])
+    width, height = size = goal_surface.get_size()
+    goal_pixels = get_pixels(goal_surface)
     pygame.display.set_mode(size, OPENGL | DOUBLEBUF)
     init()
-    image = generate_image(50)
     while True:
         event = pygame.event.poll()
         if (event.type == QUIT or
             (event.type == KEYDOWN and event.key == K_ESCAPE)):
             break
-        draw(image)
+        image = generate_image(64)
+        redraw(image)
         pygame.display.flip()
         image_pixels = glReadPixels(0, 0, width, height, GL_RGBA, GL_BYTE)
+        fitness = get_fitness(image_pixels, goal_pixels)
+        print fitness
 
 if __name__ == '__main__':
     main()
