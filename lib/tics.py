@@ -6,9 +6,8 @@ from __future__ import division
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
-import pygame, random, sys
+import pygame, random, sys, numpy
 from pygame.locals import *
-from itertools import izip
 
 class Triangle(object):
     def __init__(self, corners):
@@ -53,22 +52,9 @@ def generate_image(triangle_count, random=random):
 
 def get_pixels(surface):
     width, height = surface.get_size()
-    return [[surface.get_at((x, height - y - 1)) for y in xrange(height)]
-             for x in xrange(width)]
-
-def get_lengths(pixels):
-    return len(pixels), len(pixels[0]), len(pixels[0][0])
-
-def get_fitness(image_pixels, goal_pixels):
-    """return the average squared distance as a number in the range [0, 1]"""
-    height, width, depth = get_lengths(image_pixels)
-    assert (height, width, depth) == get_lengths(goal_pixels)
-    result = 0
-    for image_row, goal_row in izip(image_pixels, goal_pixels):
-        for image_pixel, goal_pixel in izip(image_row, goal_row):
-            for image_comp, goal_comp in izip(image_pixel, goal_pixel):
-                result += (image_comp - goal_comp) ** 2
-    return result / (height * width * depth) / 255 ** 2
+    return numpy.array([[surface.get_at((x, height - y - 1))
+                         for y in xrange(height)]
+                        for x in xrange(width)])
 
 def main():
     args = sys.argv[1:]
@@ -90,7 +76,7 @@ def main():
         redraw(image)
         pygame.display.flip()
         image_pixels = glReadPixels(0, 0, width, height, GL_RGBA, GL_BYTE)
-        fitness = get_fitness(image_pixels, goal_pixels)
+        fitness = ((image_pixels - goal_pixels) ** 2).mean() / 255 ** 2
         print fitness
 
 if __name__ == '__main__':
