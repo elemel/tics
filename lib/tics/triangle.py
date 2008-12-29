@@ -20,3 +20,9 @@ class Triangle(object):
         
     def __iter__(self):
         return iter(self.__corners)
+        
+    def __hash__(self):
+        return hash(self.__corners)
+    
+    def __eq__(self, other):
+        return self.__corners == other.__corners

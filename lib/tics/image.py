@@ -10,3 +10,9 @@ class Image(object):
     
     def __iter__(self):
         return iter(self.__triangles)
+        
+    def __hash__(self):
+        return hash(self.__triangles)
+    
+    def __eq__(self, other):
+        return self.__triangles == other.__triangles
