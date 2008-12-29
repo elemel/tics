@@ -4,15 +4,16 @@ from tics.generate import generate_triangle
 from tics.image import Image
 from tics.triangle import Triangle
 
-def adjust_triangle(triangle, random=random):
-    comps = list(chain(*triangle))
+def adjust_vertex(vertex, random=random):
+    comps = [vertex.x, vertex.y, vertex.r, vertex.g, vertex.b, vertex.a]
     i = random.randrange(len(comps))
     comps[i] = random.normalvariate(comps[i], 0.1)
-    return Triangle([comps[:6], comps[6:12], comps[12:]])
+    vertex.x, vertex.y, vertex.r, vertex.g, vertex.b, vertex.a = comps
 
 def mutate_image_adjust(image, random=random):
-    i = random.randrange(len(image.triangles))
-    image.triangles[i] = adjust_triangle(image.triangles[i], random)
+    triangle = random.choice(image.triangles)
+    vertex = random.choice(triangle.vertices)
+    adjust_vertex(vertex, random)
 
 def mutate_image_replace(image, random=random):
     i = random.randrange(len(image.triangles))
