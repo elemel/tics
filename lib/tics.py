@@ -9,6 +9,7 @@ from OpenGL.GLU import *
 import pygame, random, sys, numpy
 from pygame.locals import *
 from itertools import count, chain, izip
+from tics.generate import generate_image, generate_triangle
 from tics.image import Image
 from tics.triangle import Triangle
 
@@ -21,12 +22,6 @@ def init():
 def redraw(image):
     glClear(GL_COLOR_BUFFER_BIT)
     image.draw()
-
-def generate_triangle(random=random):
-    return Triangle((random.random() for _ in xrange(6)) for _ in xrange(3))
-
-def generate_image(triangle_count, random=random):
-    return Image([generate_triangle(random) for _ in xrange(triangle_count)])
 
 def adjust_triangle(triangle, random=random):
     comps = list(chain(*triangle))
