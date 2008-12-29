@@ -9,18 +9,8 @@ from OpenGL.GLU import *
 import pygame, random, sys, numpy
 from pygame.locals import *
 from itertools import count, chain, izip
+from tics.image import Image
 from tics.triangle import Triangle
-
-class Image(object):
-    def __init__(self, triangles):
-        self.__triangles = tuple(Triangle(t) for t in triangles)
-
-    def draw(self):
-        for triangle in self.__triangles:
-            triangle.draw()
-    
-    def __iter__(self):
-        return iter(self.__triangles)
 
 def init():
     glShadeModel(GL_SMOOTH)
