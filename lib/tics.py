@@ -35,10 +35,6 @@ class Image(object):
     
     def __iter__(self):
         return iter(self.__triangles)
-        
-    @property
-    def triangles(self):
-        return self.__triangles
 
 def init():
     glShadeModel(GL_SMOOTH)
@@ -56,18 +52,35 @@ def generate_triangle(random=random):
 def generate_image(triangle_count, random=random):
     return Image([generate_triangle() for _ in xrange(triangle_count)])
 
-def mutate_triangle(triangle, random=random):
-    new_triangle = generate_triangle(random)
-    weight = random.random()
-    return Triangle(((comp * weight + new_comp * (1 - weight))
-                     for comp, new_comp in izip(corner, new_corner))
-                    for corner, new_corner in izip(triangle, new_triangle))
+def adjust_triangle(triangle, random=random):
+    comps = list(chain(*triangle))
+    i = random.randrange(len(comps))
+    comps[i] = random.normalvariate(comps[i], 0.1)
+    return Triangle([comps[:6], comps[6:12], comps[12:]])
+
+def mutate_image_adjust(image, random=random):
+    triangles = list(image)
+    i = random.randrange(len(triangles))
+    triangles[i] = adjust_triangle(triangles[i], random)
+    return Image(triangles)
+
+def mutate_image_replace(image, random=random):
+    triangles = list(image)
+    i = random.randrange(len(triangles))
+    triangles[i] = generate_triangle(random)
+    return Image(triangles)
+
+def mutate_image_swap(image, random=random):
+    triangles = list(image)
+    i = random.randrange(len(triangles))
+    j = random.randrange(len(triangles))
+    triangles[i], triangles[j] = triangles[j], triangles[i]
+    return Image(triangles)
 
 def mutate_image(image, random=random):
-    triangles = image.triangles
-    i = random.randrange(len(triangles))
-    triangle = mutate_triangle(triangles[i], random)
-    return Image(chain(triangles[:i], [triangle], triangles[i + 1:]))
+    mutations = [mutate_image_adjust, mutate_image_replace, mutate_image_swap]
+    mutation = random.choice(mutations)
+    return mutation(image, random)
 
 def get_pixels(surface):
     width, height = surface.get_size()
