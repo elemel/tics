@@ -11,12 +11,9 @@ def bubble(image, random=random):
 
 def morph(image, random=random):
     triangle = random.choice(image.triangles)
-    sigma = random.random()
-    for vertex in triangle.vertices:
-        comps = [vertex.x, vertex.y, vertex.r, vertex.g, vertex.b, vertex.a]
-        comps = [random.normalvariate(c, sigma) for c in comps]
-        vertex.x, vertex.y, vertex.r, vertex.g, vertex.b, vertex.a = comps
-
+    vertex = random.choice(triangle.vertices)
+    setattr(vertex, random.choice("xyrgba"), random.random())
+    
 def replace(image, random=random):
     i = random.randrange(len(image.triangles))
     image.triangles[i] = generate_triangle(random)
