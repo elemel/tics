@@ -16,13 +16,11 @@ def mutate_image_replace(image, random=random):
     i = random.randrange(len(image.triangles))
     image.triangles[i] = generate_triangle(random)
 
-def swap_items(lst, i, j):
-    lst[i], lst[j] = lst[j], lst[j]
-
 def mutate_image_swap(image, random=random):
-    i = random.randrange(len(image.triangles))
-    j = random.randrange(len(image.triangles))
-    swap_items(image.triangles, i, j)
+    triangles = image.triangles
+    i = random.randrange(len(triangles))
+    j = random.randrange(len(triangles))
+    triangles[i], triangles[j] = triangles[j], triangles[i]
 
 def mutate_image(image, random=random):
     mutations = [mutate_image_adjust, mutate_image_replace, mutate_image_swap]
