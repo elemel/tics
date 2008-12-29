@@ -6,7 +6,7 @@ from __future__ import division
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
-import pygame, random, sys, numpy
+import pygame, random, sys, numpy, copy
 from pygame.locals import *
 from itertools import count
 from tics.generate import generate_image, generate_triangle
@@ -51,7 +51,8 @@ def main():
         if (event.type == QUIT or
             (event.type == KEYDOWN and event.key == K_ESCAPE)):
             break
-        image = mutate_image(best_image)
+        image = copy.deepcopy(best_image)
+        mutate_image(image)
         redraw(image)
         pygame.display.flip()
         image_pixels = glReadPixels(0, 0, width, height, GL_RGB, GL_BYTE)
