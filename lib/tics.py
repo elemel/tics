@@ -10,10 +10,15 @@ import pygame, random, sys, numpy
 from pygame.locals import *
 from itertools import count, chain, izip
 
+def normalize_comp(comp):
+    return float(max(0, min(comp, 1)))
+
+def normalize_corner(corner):
+    return tuple(normalize_comp(comp) for comp in corner)
+
 class Triangle(object):
     def __init__(self, corners):
-        self.__corners = tuple(tuple(float(comp) for comp in corner)
-                               for corner in corners)
+        self.__corners = tuple(normalize_corner(corner) for corner in corners)
 
     def draw(self):
         glBegin(GL_TRIANGLES)
