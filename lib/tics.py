@@ -44,7 +44,7 @@ def main():
     goal_pixels = get_pixels(goal_surface)
     pygame.display.set_mode(size, OPENGL | DOUBLEBUF)
     init()
-    best_image = generate_image(32)
+    best_image = generate_image(64)
     best_fitness = 1
     for generation in count():
         event = pygame.event.poll()
