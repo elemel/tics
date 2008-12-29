@@ -12,9 +12,17 @@ def adjust(image, random=random):
         comps[i] = random.normalvariate(comps[i], 0.1)
         vertex.x, vertex.y, vertex.r, vertex.g, vertex.b, vertex.a = comps
 
+def bubble(image, random=random):
+    triangles = image.triangles
+    i = random.randrange(len(triangles) - 1)
+    triangles[i], triangles[i + 1] = triangles[i + 1], triangles[i]
+
 def replace(image, random=random):
     i = random.randrange(len(image.triangles))
     image.triangles[i] = generate_triangle(random)
+
+def shuffle(image, random=random):
+    random.shuffle(image.triangles)
 
 def swap(image, random=random):
     triangles = image.triangles
@@ -23,6 +31,6 @@ def swap(image, random=random):
     triangles[i], triangles[j] = triangles[j], triangles[i]
 
 def mutate_image(image, random=random):
-    mutations = [adjust, replace, swap]
+    mutations = [adjust, bubble, replace, shuffle, swap]
     mutation = random.choice(mutations)
     mutation(image, random)
