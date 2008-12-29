@@ -30,6 +30,9 @@ def get_pixels(surface):
                          for y in xrange(height)]
                         for x in xrange(width)])
 
+def get_fitness(image_pixels, goal_pixels):
+    return ((image_pixels - goal_pixels) ** 2).mean() / 255 ** 2
+
 def main():
     args = sys.argv[1:]
     if len(args) != 1:
@@ -52,7 +55,7 @@ def main():
         redraw(image)
         pygame.display.flip()
         image_pixels = glReadPixels(0, 0, width, height, GL_RGB, GL_BYTE)
-        fitness = ((image_pixels - goal_pixels) ** 2).mean() / 255 ** 2
+        fitness = get_fitness(image_pixels, goal_pixels)
         if fitness < best_fitness:
             print "#%d: %.7f" % (generation, fitness)
             best_image = image
