@@ -21,6 +21,10 @@ def replace(image, random=random):
     i = random.randrange(len(image.triangles))
     image.triangles[i] = generate_triangle(random)
 
+def rotate(image, random=random):
+    i = random.randrange(len(image.triangles))
+    image.triangles = image.triangles[i:] + image.triangles[:i]
+
 def shuffle(image, random=random):
     random.shuffle(image.triangles)
 
@@ -31,6 +35,6 @@ def swap(image, random=random):
     triangles[i], triangles[j] = triangles[j], triangles[i]
 
 def mutate_image(image, random=random):
-    mutations = [bubble, morph, replace, shuffle, swap]
+    mutations = [bubble, morph, replace, rotate, shuffle, swap]
     mutation = random.choice(mutations)
     mutation(image, random)
