@@ -38,7 +38,7 @@ def get_fitness(image_pixels, goal_pixels):
     return ((image_pixels - goal_pixels) ** 2).mean()
 
 def generate_triangle(random):
-    return [random.random() for _ in xrange(19)]
+    return tuple(random.random() for _ in xrange(19))
 
 def generate_individual(triangle_count, random):
     return [generate_triangle(random) for _ in xrange(triangle_count)]
@@ -52,17 +52,20 @@ def crossover(mother, father, random):
     i = random.randrange(len(mother) + 1)
     j = random.randrange(len(mother) + 1)
     i, j = min(i, j), max(i, j)
-    return copy.deepcopy(mother[:i] + father[i:j] + mother[j:])
+    return mother[:i] + father[i:j] + mother[j:]
 
 def select_parent(population, random):
     i = int(random.random() ** 2 * len(population))
     return population[i]
 
 def mutate(child, random):
-    for triangle in child:
-        for i in xrange(len(triangle)):
-            if random.random() < 0.01:
-                triangle[i] = random.random()
+    i = random.randrange(len(child))
+    triangle = list(child[i])
+    j = random.randrange(len(triangle))
+    triangle[j] += random.choice([-1, 1]) * random.random() ** 2
+    if not (0 <= triangle[j] < 1):
+        triangle[j] = random.random()
+    child[i] = tuple(triangle)
 
 def evolve_population(old_population, fitnesses, random):
     def cmp_fitness(a, b):
