@@ -50,7 +50,9 @@ def generate_population(individual_count, triangle_count, random):
 def crossover(mother, father, random):
     assert len(mother) == len(father)
     i = random.randrange(len(mother) + 1)
-    return copy.deepcopy(mother[:i] + father[i:])
+    j = random.randrange(len(mother) + 1)
+    i, j = min(i, j), max(i, j)
+    return copy.deepcopy(mother[:i] + father[i:j] + mother[j:])
 
 def select_parent(population, random):
     i = int(random.random() ** 2 * len(population))
