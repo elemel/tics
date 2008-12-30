@@ -9,6 +9,7 @@ from OpenGL.GLU import *
 import pygame, random, sys, numpy, copy
 from pygame.locals import *
 from itertools import count
+from operator import itemgetter
 
 def init_gl():
     glShadeModel(GL_SMOOTH)
@@ -19,10 +20,11 @@ def init_gl():
 def render_individual(individual):
     glClear(GL_COLOR_BUFFER_BIT)
     glBegin(GL_TRIANGLES)
-    for i in xrange(0, len(individual), 6):
-        x, y, r, g, b, a = individual[i:i + 6]
-        glColor(r, g, b, a)
-        glVertex(-1 + 2 * x, -1 + 2 * y)
+    for triangle in sorted(individual, key=itemgetter(0)):
+        for i in xrange(1, len(triangle), 6):
+            x, y, r, g, b, a = triangle[i:i + 6]
+            glColor(r, g, b, a)
+            glVertex(-1 + 2 * x, -1 + 2 * y)
     glEnd()
     pygame.display.flip()
 
@@ -35,8 +37,11 @@ def get_surface_pixels(surface):
 def get_fitness(image_pixels, goal_pixels):
     return ((image_pixels - goal_pixels) ** 2).mean()
 
+def generate_triangle(random):
+    return [random.random() for _ in xrange(19)]
+
 def generate_individual(triangle_count, random):
-    return [random.random() for _ in xrange(triangle_count * 3 * 6)]
+    return [generate_triangle(random) for _ in xrange(triangle_count)]
 
 def generate_population(individual_count, triangle_count, random):
     return [generate_individual(triangle_count, random)
@@ -45,16 +50,17 @@ def generate_population(individual_count, triangle_count, random):
 def crossover(mother, father, random):
     assert len(mother) == len(father)
     i = random.randrange(len(mother) + 1)
-    return mother[:i] + father[i:]
+    return copy.deepcopy(mother[:i] + father[i:])
 
 def select_parent(population, random):
     i = int(random.random() ** 2 * len(population))
     return population[i]
 
 def mutate(child, random):
-    for i in xrange(len(child)):
-        if random.random() < 0.01:
-            child[i] = random.random()
+    for triangle in child:
+        for i in xrange(len(triangle)):
+            if random.random() < 0.01:
+                triangle[i] = random.random()
 
 def evolve_population(old_population, fitnesses, random):
     def cmp_fitness(a, b):
