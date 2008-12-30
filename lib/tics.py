@@ -11,7 +11,7 @@ from pygame.locals import *
 from itertools import count
 from operator import itemgetter
 
-def init_gl():
+def init_opengl():
     glShadeModel(GL_SMOOTH)
     glClearColor(0, 0, 0, 0)
     glEnable(GL_BLEND)
@@ -88,7 +88,7 @@ def main():
     width, height = size = goal_surface.get_size()
     goal_pixels = get_surface_pixels(goal_surface)
     pygame.display.set_mode(size, OPENGL | DOUBLEBUF)
-    init_gl()
+    init_opengl()
     population = generate_population(64, 64, random)
     for generation in count():
         fitnesses = {}
