@@ -112,7 +112,7 @@ def main():
     if len(args) == 2:
         try:
             parent = pickle.load(open(args[1], "r"))
-            print "tics: loaded target file: %s" % args[1]
+            print "tics: loaded target: %s" % args[1]
         except:
             pass
     parent_fitness = float("inf")
@@ -122,7 +122,7 @@ def main():
                 (event.type == KEYDOWN and event.key == K_ESCAPE)):
                 if len(args) == 2:
                     pickle.dump(parent, open(args[1], "w"))
-                    print "tics: saved target file: %s" % args[1]
+                    print "tics: saved target: %s" % args[1]
                 sys.exit(0)
         child = copy.deepcopy(parent)
         mutate(child, random)
@@ -132,9 +132,7 @@ def main():
         if child_fitness < parent_fitness:
             parent = child
             parent_fitness = child_fitness
-        print ("tics: g = %d, t = %d, f = %d"
-               % (generation, pygame.time.get_ticks() / 1000.0,
-                  parent_fitness))
+            print "tics: fitness = %d" % parent_fitness
                   
 if __name__ == '__main__':
     main()
