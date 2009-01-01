@@ -6,8 +6,6 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame, random, sys, numpy, copy, os
 from pygame.locals import *
-from itertools import count, chain
-from operator import itemgetter
 try:
     import cPickle as pickle
 except:
@@ -47,7 +45,7 @@ def surface_from_pixels(pixels):
     return surface
     
 def fitness(pixels, goal_pixels):
-    return ((pixels - goal_pixels) ** 2).mean()
+    return numpy.square(pixels - goal_pixels).mean()
 
 def generate_triangle(random):
     triangle = []
@@ -116,7 +114,7 @@ def main():
         except:
             pass
     parent_fitness = float("inf")
-    for generation in count():
+    while True:
         for event in pygame.event.get():
             if (event.type == QUIT or
                 (event.type == KEYDOWN and event.key == K_ESCAPE)):
