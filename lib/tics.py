@@ -4,10 +4,14 @@
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
-import pygame, random, sys, numpy, copy
+import pygame, random, sys, numpy, copy, os
 from pygame.locals import *
 from itertools import count, chain
 from operator import itemgetter
+try:
+    import cPickle as pickle
+except:
+    import pickle
 
 TRIANGLE_COUNT = 100
 ALPHA_SCALE = 0.5
@@ -95,8 +99,8 @@ def pixels_from_display(width, height):
 
 def main():
     args = sys.argv[1:]
-    if len(args) != 1:
-        sys.stderr.write("Usage: tics <image>\n")
+    if len(args) not in (1, 2):
+        sys.stderr.write("Usage: tics <source> [<target>]\n")
         sys.exit(1)
     pygame.init()
     goal_surface = pygame.image.load(args[0])
@@ -105,13 +109,20 @@ def main():
     pygame.display.set_mode(size, OPENGL | DOUBLEBUF)
     init_opengl()
     parent = [generate_triangle(random) for _ in xrange(TRIANGLE_COUNT)]
+    if len(args) == 2:
+        try:
+            parent = pickle.load(open(args[1], "r"))
+            print "tics: loaded target file: %s" % args[1]
+        except:
+            pass
     parent_fitness = float("inf")
     for generation in count():
         for event in pygame.event.get():
             if (event.type == QUIT or
                 (event.type == KEYDOWN and event.key == K_ESCAPE)):
-                pixels = pixels_from_display(width, height)
-                pygame.image.save(surface_from_pixels(pixels), "tics.bmp")
+                if len(args) == 2:
+                    pickle.dump(parent, open(args[1], "w"))
+                    print "tics: saved target file: %s" % args[1]
                 sys.exit(0)
         child = copy.deepcopy(parent)
         mutate(child, random)
@@ -121,7 +132,7 @@ def main():
         if child_fitness < parent_fitness:
             parent = child
             parent_fitness = child_fitness
-        print ("g = %d, t = %d, f = %d"
+        print ("tics: g = %d, t = %d, f = %d"
                % (generation, pygame.time.get_ticks() / 1000.0,
                   parent_fitness))
                   
