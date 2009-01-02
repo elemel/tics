@@ -37,7 +37,7 @@ def load_triangle_image(path):
             g /= 255.0
             b /= 255.0
             a /= 255.0
-            triangle.extend([x, y, r, g, b, a])
+            triangle.append([x, y, r, g, b, a])
         image.append(triangle)
     f.close()
     return image, (width, height)
@@ -47,8 +47,8 @@ def save_triangle_image(image, resolution, path):
     width, height = resolution
     f.write(struct.pack("!HHH", width, height, len(image)))
     for triangle in image:
-        for i in xrange(0, len(triangle), 6):
-            x, y, r, g, b, a = triangle[i:i + 6]
+        for vertex in triangle:
+            x, y, r, g, b, a = vertex
             x = min(int(x * 65536), 65535)
             y = min(int(y * 65536), 65535)
             r = min(int(r * 256), 255)

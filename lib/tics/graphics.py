@@ -35,8 +35,8 @@ def draw(image):
     glClear(GL_COLOR_BUFFER_BIT)
     glBegin(GL_TRIANGLES)
     for triangle in image:
-        for i in xrange(0, len(triangle), 6):
-            x, y, r, g, b, a = triangle[i:i + 6]
+        for vertex in triangle:
+            x, y, r, g, b, a = vertex
             glColor4d(r, g, b, a * ALPHA_SCALE)
             glVertex2d(-1 + 2 * x, -1 + 2 * y)
     glEnd()

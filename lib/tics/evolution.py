@@ -33,11 +33,13 @@ def generate_triangle(random):
     y = random.random()
     r = random.random() ** 3
     for _ in xrange(3):
-        triangle.append(clamp(x + random.choice([-1, 1]) * r *
-                              random.random()))
-        triangle.append(clamp(y + random.choice([-1, 1]) * r *
-                              random.random()))
-        triangle.extend(color)
+        vertex = []
+        vertex.append(clamp(x + random.choice([-1, 1]) * r *
+                            random.random()))
+        vertex.append(clamp(y + random.choice([-1, 1]) * r *
+                            random.random()))
+        vertex.extend(color)
+        triangle.append(vertex)
     return triangle
 
 def clamp(comp):
@@ -61,8 +63,9 @@ def replace_triangle(image, random):
 
 def tweak_triangle(image, random):
     triangle = random.choice(image)
-    i = random.randrange(len(triangle))
-    triangle[i] = tweak_comp(triangle[i], random)
+    vertex = random.choice(triangle)
+    i = random.randrange(len(vertex))
+    vertex[i] = tweak_comp(vertex[i], random)
     
 def mutate(image, random):
     mutation = random.choice([move_triangle, replace_triangle, tweak_triangle])
