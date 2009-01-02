@@ -25,6 +25,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame, random, sys, numpy, copy, os
 from pygame.locals import *
+from tics.evolution import *
 from tics.io import *
 
 def log(message):
@@ -63,51 +64,6 @@ def surface_from_pixels(pixels):
             surface.set_at((x, y), color)
     return surface
     
-def fitness(pixels, source_pixels):
-    return numpy.square(pixels - source_pixels).mean()
-
-def generate_triangle(random):
-    triangle = []
-    color = [random.random() for _ in xrange(4)]
-    x = random.random()
-    y = random.random()
-    r = random.random() ** 3
-    for _ in xrange(3):
-        triangle.append(clamp(x + random.choice([-1, 1]) * r *
-                              random.random()))
-        triangle.append(clamp(y + random.choice([-1, 1]) * r *
-                              random.random()))
-        triangle.extend(color)
-    return triangle
-
-def clamp(comp):
-    return max(0.0, min(comp, 1.0))
-
-def tweak_comp(comp, random):
-    return clamp(comp + random.choice([-1, 1]) * random.random() ** 3)
-
-def move_triangle(image, random):
-    i = random.randrange(len(image))
-    j = random.randrange(len(image))
-    triangle = image.pop(i)
-    image.insert(j, triangle)
-
-def replace_triangle(image, random):
-    i = random.randrange(len(image))
-    j = random.randrange(len(image))
-    triangle = generate_triangle(random)
-    image.pop(i)
-    image.insert(j, triangle)
-
-def tweak_triangle(image, random):
-    triangle = random.choice(image)
-    i = random.randrange(len(triangle))
-    triangle[i] = tweak_comp(triangle[i], random)
-    
-def mutate(image, random):
-    mutation = random.choice([move_triangle, replace_triangle, tweak_triangle])
-    mutation(image, random)
-
 def pixels_from_display(width, height):
     pixels = glReadPixelsub(0, 0, max(width, height), max(width, height),
                             GL_RGB)
