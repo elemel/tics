@@ -73,7 +73,7 @@ def pixels_from_display(width, height):
 def main():
     args = sys.argv[1:]
     if len(args) != 1:
-        sys.stderr.write("Usage: tics <image>\n")
+        log("missing file operand")
         sys.exit(1)
     source_path = args[0]
     target_path = "%s.tics" % os.path.splitext(source_path)[0]
