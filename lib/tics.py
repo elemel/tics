@@ -25,9 +25,14 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame, random, sys, numpy, copy, os
 from pygame.locals import *
+
+def log(message):
+    sys.stderr.write("tics: %s\n" % message)
+
 try:
     import cPickle as pickle
 except:
+    log("failed to import cPickle, trying pickle instead")
     import pickle
 
 TRIANGLE_COUNT = 100
@@ -120,7 +125,12 @@ def main():
         sys.stderr.write("Usage: tics <source> [<target>]\n")
         sys.exit(1)
     pygame.init()
-    goal_surface = pygame.image.load(args[0])
+    try:
+        goal_surface = pygame.image.load(args[0])
+        log("loaded source file \"%s\"" % args[0])
+    except:
+        log("failed to load source file \"%s\"" % args[0])
+        sys.exit(1)
     width, height = size = goal_surface.get_size()
     goal_pixels = pixels_from_surface(goal_surface)
     pygame.display.set_mode(size, OPENGL | DOUBLEBUF)
@@ -129,9 +139,10 @@ def main():
     if len(args) == 2:
         try:
             parent = pickle.load(open(args[1], "r"))
-            print "tics: loaded target: %s" % args[1]
+            log("loaded target file \"%s\"" % args[1])
         except:
-            pass
+            log("failed to load target file \"%s\"" % args[1])
+            sys.exit(1)
     parent_fitness = float("inf")
     while True:
         for event in pygame.event.get():
@@ -139,7 +150,7 @@ def main():
                 (event.type == KEYDOWN and event.key == K_ESCAPE)):
                 if len(args) == 2:
                     pickle.dump(parent, open(args[1], "w"))
-                    print "tics: saved target: %s" % args[1]
+                    log("saved target file \"%s\"" % args[1])
                 sys.exit(0)
         child = copy.deepcopy(parent)
         mutate(child, random)
@@ -149,7 +160,7 @@ def main():
         if child_fitness < parent_fitness:
             parent = child
             parent_fitness = child_fitness
-            print "tics: fitness = %d" % parent_fitness
-                  
+            log("improved fitness to %f" % parent_fitness)
+
 if __name__ == '__main__':
     main()
