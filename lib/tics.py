@@ -68,8 +68,8 @@ def surface_from_pixels(pixels):
             surface.set_at((x, y), color)
     return surface
     
-def fitness(pixels, goal_pixels):
-    return numpy.square(pixels - goal_pixels).mean()
+def fitness(pixels, source_pixels):
+    return numpy.square(pixels - source_pixels).mean()
 
 def generate_triangle(random):
     triangle = []
@@ -121,50 +121,50 @@ def pixels_from_display(width, height):
 
 def main():
     args = sys.argv[1:]
-    if len(args) not in (1, 2):
-        sys.stderr.write("Usage: tics <source> [<target>]\n")
+    if len(args) != 1:
+        sys.stderr.write("Usage: tics <image>\n")
         sys.exit(1)
+    source_path = args[0]
+    target_path = "%s.tics" % os.path.splitext(source_path)[0]
+    backup_path = "%s~" % target_path
     pygame.init()
     try:
-        goal_surface = pygame.image.load(args[0])
-        log("loaded source file \"%s\"" % args[0])
+        source_surface = pygame.image.load(source_path)
     except:
-        log("failed to load source file \"%s\"" % args[0])
+        log("could not load source file: %s" % source_path)
         sys.exit(1)
-    width, height = size = goal_surface.get_size()
-    goal_pixels = pixels_from_surface(goal_surface)
+    width, height = size = source_surface.get_size()
+    source_pixels = pixels_from_surface(source_surface)
     pygame.display.set_mode(size, OPENGL | DOUBLEBUF)
     init_opengl()
-    parent = [generate_triangle(random) for _ in xrange(TRIANGLE_COUNT)]
-    if len(args) == 2:
-        try:
-            parent = pickle.load(open(args[1], "r"))
-            log("loaded target file \"%s\"" % args[1])
-        except:
-            log("failed to load target file \"%s\"" % args[1])
-            sys.exit(1)
+    try:
+        parent = pickle.load(open(target_path, "r"))
+    except:
+        parent = [generate_triangle(random) for _ in xrange(TRIANGLE_COUNT)]
     draw(parent)
     parent_pixels = pixels_from_display(width, height)
-    parent_fitness = fitness(parent_pixels, goal_pixels)
-    log("fitness is %f" % parent_fitness)
+    parent_fitness = fitness(parent_pixels, source_pixels)
+    log("fitness = %f" % parent_fitness)
     while True:
         for event in pygame.event.get():
             if (event.type == QUIT or
                 (event.type == KEYDOWN and event.key == K_ESCAPE)):
-                if len(args) == 2:
-                    pickle.dump(parent, open(args[1], "w"))
-                    log("saved target file \"%s\"" % args[1])
+                try:
+                    pickle.dump(parent, open(target_path, "w"))
+                except:
+                    log("could not save target file: %s" % target_path)
+                    sys.exit(1)
                 sys.exit(0)
         child = copy.deepcopy(parent)
         mutate(child, random)
         draw(child)
         child_pixels = pixels_from_display(width, height)
-        child_fitness = fitness(child_pixels, goal_pixels)
+        child_fitness = fitness(child_pixels, source_pixels)
         if child_fitness < parent_fitness:
             parent = child
             parent_pixels = child_pixels
             parent_fitness = child_fitness
-            log("improved fitness to %f" % parent_fitness)
+            log("fitness = %f" % parent_fitness)
 
 if __name__ == '__main__':
     main()
