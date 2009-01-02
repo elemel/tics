@@ -48,6 +48,7 @@ def main():
     resolution = source_surface.get_size()
     source_pixels = pixels_from_surface(source_surface)
     pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
+    pygame.display.set_caption("tics: %s" % os.path.basename(source_path))
     init_opengl()
     try:
         parent, parent_resolution = load_triangle_image(target_path)
