@@ -56,6 +56,8 @@ def surface_from_pixels(pixels):
     return surface
     
 def pixels_from_display(width, height):
+    # The width and height manipulation below is a workaround. Without it,
+    # PyOpenGL returns distorted pixel data. Maybe I'm doing it wrong.
     pixels = glReadPixelsub(0, 0, max(width, height), max(width, height),
                             GL_RGB)
     assert width >= height
