@@ -143,7 +143,10 @@ def main():
         except:
             log("failed to load target file \"%s\"" % args[1])
             sys.exit(1)
-    parent_fitness = float("inf")
+    draw(parent)
+    parent_pixels = pixels_from_display(width, height)
+    parent_fitness = fitness(parent_pixels, goal_pixels)
+    log("fitness is %f" % parent_fitness)
     while True:
         for event in pygame.event.get():
             if (event.type == QUIT or
@@ -159,6 +162,7 @@ def main():
         child_fitness = fitness(child_pixels, goal_pixels)
         if child_fitness < parent_fitness:
             parent = child
+            parent_pixels = child_pixels
             parent_fitness = child_fitness
             log("improved fitness to %f" % parent_fitness)
 
