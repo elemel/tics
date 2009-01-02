@@ -45,9 +45,9 @@ def main():
     except:
         log("could not load source file: %s" % source_path)
         sys.exit(1)
-    width, height = size = source_surface.get_size()
+    resolution = source_surface.get_size()
     source_pixels = pixels_from_surface(source_surface)
-    pygame.display.set_mode(size, OPENGL | DOUBLEBUF)
+    pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
     init_opengl()
     try:
         parent, parent_resolution = load_triangle_image(target_path)
@@ -55,7 +55,7 @@ def main():
         parent = [generate_triangle(random) for _ in xrange(TRIANGLE_COUNT)]
         parent_resolution = None
     draw(parent)
-    parent_pixels = pixels_from_display(width, height)
+    parent_pixels = pixels_from_display(resolution)
     parent_fitness = fitness(parent_pixels, source_pixels)
     log("fitness = %f" % parent_fitness)
     while True:
@@ -63,7 +63,7 @@ def main():
             if (event.type == QUIT or
                 (event.type == KEYDOWN and event.key == K_ESCAPE)):
                 try:
-                    save_triangle_image(parent, size, target_path)
+                    save_triangle_image(parent, resolution, target_path)
                 except:
                     log("could not save target file: %s" % target_path)
                     sys.exit(1)
@@ -71,7 +71,7 @@ def main():
         child = copy.deepcopy(parent)
         mutate(child, random)
         draw(child)
-        child_pixels = pixels_from_display(width, height)
+        child_pixels = pixels_from_display(resolution)
         child_fitness = fitness(child_pixels, source_pixels)
         if child_fitness < parent_fitness:
             parent = child
