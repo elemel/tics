@@ -150,7 +150,8 @@ def main():
             if (event.type == QUIT or
                 (event.type == KEYDOWN and event.key == K_ESCAPE)):
                 try:
-                    pickle.dump(parent, open(target_path, "w"))
+                    pickle.dump(parent, open(target_path, "w"),
+                                pickle.HIGHEST_PROTOCOL)
                 except:
                     log("could not save target file: %s" % target_path)
                     sys.exit(1)
