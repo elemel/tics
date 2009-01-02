@@ -25,14 +25,12 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame, random, sys, numpy, copy, os
 from pygame.locals import *
+from tics.config import *
 from tics.evolution import *
 from tics.io import *
 
 def log(message):
     sys.stderr.write("tics: %s\n" % message)
-
-TRIANGLE_COUNT = 100
-ALPHA_SCALE = 0.5
 
 def init_opengl():
     glShadeModel(GL_SMOOTH)
