@@ -23,10 +23,9 @@
 
 import sys, os, numpy, random, copy
 from pygame.locals import *
-from tics.config import *
 from tics.graphics import *
 from tics.evolution import *
-from tics.io import *
+from tics.image import *
 
 def log(message):
     sys.stderr.write("tics: %s\n" % message)
@@ -38,7 +37,6 @@ def main():
         sys.exit(1)
     source_path = args[0]
     target_path = "%s.tics" % os.path.splitext(source_path)[0]
-    backup_path = "%s~" % target_path
     pygame.init()
     try:
         source_surface = pygame.image.load(source_path)
@@ -51,11 +49,11 @@ def main():
     pygame.display.set_caption("tics: %s" % os.path.basename(source_path))
     init_opengl()
     try:
-        parent, parent_resolution = load_triangle_image(target_path)
+        parent = Image.load(target_path)
     except:
-        parent = [generate_triangle(random) for _ in xrange(TRIANGLE_COUNT)]
-        parent_resolution = None
-    draw(parent)
+        parent = Image.generate(resolution, 100)
+    parent.draw()
+    pygame.display.flip()
     parent_pixels = pixels_from_display(resolution)
     parent_fitness = fitness(parent_pixels, source_pixels)
     log("fitness = %f" % parent_fitness)
@@ -63,15 +61,17 @@ def main():
         for event in pygame.event.get():
             if (event.type == QUIT or
                 (event.type == KEYDOWN and event.key == K_ESCAPE)):
+                parent.save(target_path)
                 try:
-                    save_triangle_image(parent, resolution, target_path)
+                    parent.save(target_path)
                 except:
                     log("could not save target file: %s" % target_path)
                     sys.exit(1)
                 sys.exit(0)
         child = copy.deepcopy(parent)
-        mutate(child, random)
-        draw(child)
+        child.mutate()
+        child.draw()
+        pygame.display.flip()
         child_pixels = pixels_from_display(resolution)
         child_fitness = fitness(child_pixels, source_pixels)
         if child_fitness < parent_fitness:

@@ -23,24 +23,12 @@
 
 from OpenGL.GL import *
 import pygame, numpy
-from tics.config import *
 
 def init_opengl():
     glShadeModel(GL_SMOOTH)
     glClearColor(0, 0, 0, 0)
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-def draw(image):
-    glClear(GL_COLOR_BUFFER_BIT)
-    glBegin(GL_TRIANGLES)
-    for triangle in image:
-        for vertex in triangle:
-            x, y, r, g, b, a = vertex
-            glColor4d(r, g, b, a * ALPHA_SCALE)
-            glVertex2d(-1 + 2 * x, -1 + 2 * y)
-    glEnd()
-    pygame.display.flip()
 
 def pixels_from_surface(surface):
     width, height = surface.get_size()
