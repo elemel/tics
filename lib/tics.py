@@ -24,8 +24,10 @@
 import sys, os, numpy, random, copy
 from pygame.locals import *
 from tics.graphics import *
-from tics.evolution import *
 from tics.image import *
+
+def fitness(pixels, source_pixels):
+    return numpy.square(pixels - source_pixels).mean()
 
 def log(message):
     sys.stderr.write("tics: %s\n" % message)
