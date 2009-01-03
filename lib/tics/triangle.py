@@ -21,7 +21,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-from OpenGL.GL import *
 import random, struct
 
 ATTRIBUTES = "r g b a x1 y1 x2 y2 x3 y3".split()
@@ -31,14 +30,18 @@ class Triangle(object):
         for attr in ATTRIBUTES:
             setattr(self, attr, 0)
 
-    def draw(self):
-        glBegin(GL_TRIANGLES)
-        glColor4d(self.r / 255.0, self.g / 255.0, self.b / 255.0,
-                  self.a / 255.0)
-        glVertex2d(-1 + 2 * self.x1 / 255.0, -1 + 2 * self.y1 / 255.0)
-        glVertex2d(-1 + 2 * self.x2 / 255.0, -1 + 2 * self.y2 / 255.0)
-        glVertex2d(-1 + 2 * self.x3 / 255.0, -1 + 2 * self.y3 / 255.0)
-        glEnd()
+    def draw(self, graphics):
+        graphics.draw_triangle(self.color, self.vertices)
+    
+    @property
+    def color(self):
+        return self.r / 255.0, self.g / 255.0, self.b / 255.0, self.a / 255.0
+
+    @property
+    def vertices(self):
+        return ((self.x1 / 255.0, self.y1 / 255.0),
+                (self.x2 / 255.0, self.y2 / 255.0),
+                (self.x3 / 255.0, self.y3 / 255.0))
 
     @classmethod
     def generate(cls):

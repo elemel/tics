@@ -50,12 +50,12 @@ def main():
     pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
     pygame.display.set_caption("tics: %s" % os.path.basename(source_path))
     init_opengl()
+    graphics = Graphics(resolution)
     try:
         parent = Image.load(target_path)
     except:
         parent = Image.generate(resolution, 100)
-    parent.draw()
-    pygame.display.flip()
+    graphics.update(parent)
     parent_pixels = pixels_from_display(resolution)
     parent_fitness = fitness(parent_pixels, source_pixels)
     log("fitness = %f" % parent_fitness)
@@ -72,8 +72,7 @@ def main():
                 sys.exit(0)
         child = copy.deepcopy(parent)
         child.mutate()
-        child.draw()
-        pygame.display.flip()
+        graphics.update(child)
         child_pixels = pixels_from_display(resolution)
         child_fitness = fitness(child_pixels, source_pixels)
         if child_fitness < parent_fitness:

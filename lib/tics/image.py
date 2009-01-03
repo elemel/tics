@@ -21,7 +21,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-from OpenGL.GL import *
 import random, struct
 from tics.triangle import *
 
@@ -31,10 +30,9 @@ class Image(object):
         self.height = 0
         self.triangles = []
 
-    def draw(self):
-        glClear(GL_COLOR_BUFFER_BIT)
+    def draw(self, graphics):
         for triangle in self.triangles:
-            triangle.draw()
+            triangle.draw(graphics)
 
     @classmethod
     def generate(cls, resolution,  triangle_count):

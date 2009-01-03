@@ -24,9 +24,27 @@
 from OpenGL.GL import *
 import pygame, numpy
 
+class Graphics(object):
+    def __init__(self, resolution):
+        self.resolution = resolution
+
+    def clear(self):
+        glClear(GL_COLOR_BUFFER_BIT)
+
+    def draw_triangle(self, color, vertices):
+        glBegin(GL_TRIANGLES)
+        glColor4d(*color)
+        for x, y in vertices:
+            glVertex2d(2.0 * x - 1.0, 2.0 * y - 1.0)
+        glEnd()        
+
+    def update(self, image):
+        self.clear()
+        image.draw(self)
+        pygame.display.flip()
+
 def init_opengl():
-    glShadeModel(GL_SMOOTH)
-    glClearColor(0, 0, 0, 0)
+    glClearColor(0.0, 0.0, 0.0, 0.0)
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
