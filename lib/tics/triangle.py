@@ -21,47 +21,43 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-import random, struct
-
-ATTRIBUTES = "r g b a x1 y1 x2 y2 x3 y3".split()
+import random, struct, numpy
 
 class Triangle(object):
     def __init__(self):
-        for attr in ATTRIBUTES:
-            setattr(self, attr, 0)
+        self.color = numpy.array([0, 0, 0, 0])
+        self.vertices = numpy.array([[0, 0], [0, 0], [0, 0]])
 
     def draw(self, graphics):
-        graphics.draw_triangle(self.color, self.vertices)
-    
-    @property
-    def color(self):
-        return self.r / 255.0, self.g / 255.0, self.b / 255.0, self.a / 255.0
-
-    @property
-    def vertices(self):
-        return ((self.x1 / 255.0, self.y1 / 255.0),
-                (self.x2 / 255.0, self.y2 / 255.0),
-                (self.x3 / 255.0, self.y3 / 255.0))
+        graphics.draw_triangle(self.color / 15.0, self.vertices / 255.0)
 
     @classmethod
     def generate(cls):
         triangle = Triangle()
-        for attr in ATTRIBUTES:
-            setattr(triangle, attr, random.randrange(256))
+        triangle.color[:] = [random.randrange(16) for _ in xrange(4)]
+        for vertex in triangle.vertices:
+            vertex[:] = random.randrange(256), random.randrange(256)
         return triangle
 
     @classmethod
     def read(cls, f):
         triangle = Triangle()
-        values = struct.unpack("!BBBBBBBBBB", f.read(10))
-        for attr, value in zip(ATTRIBUTES, values):
-            setattr(triangle, attr, value)
+        rg, ba = struct.unpack("!BB", f.read(2))
+        triangle.color[:] = divmod(rg, 16) + divmod(ba, 16)
+        for vertex in triangle.vertices:
+            vertex[:] = struct.unpack("!BB", f.read(2))
         return triangle
 
     def write(self, f):
-        values = [getattr(self, attr) for attr in ATTRIBUTES]
-        f.write(struct.pack("!BBBBBBBBBB", *values))
+        r, g, b, a = self.color
+        f.write(struct.pack("!BB", r * 16 + g, b * 16 + a))
+        for vertex in self.vertices:
+            f.write(struct.pack("!BB", *vertex))
 
     def mutate(self):
-        attr = random.choice(ATTRIBUTES)
-        setattr(self, attr, random.randrange(256))
+        if random.random() < 0.5:
+            self.color[random.randrange(4)] = random.randrange(16)
+        else:
+            i = random.randrange(3)
+            j = random.randrange(2)
+            self.vertices[i][j] = random.randrange(256)
