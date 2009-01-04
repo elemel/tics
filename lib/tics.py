@@ -46,7 +46,7 @@ def main():
         log("could not load source file: %s" % source_path)
         sys.exit(1)
     resolution = source_surface.get_size()
-    source_pixels = pixels_from_surface(source_surface)
+    source_bytes = bytes_from_surface(source_surface)
     pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
     pygame.display.set_caption("tics: %s" % os.path.basename(source_path))
     init_opengl()
@@ -56,8 +56,8 @@ def main():
     except:
         parent = Image.generate(resolution, TRIANGLE_COUNT)
     graphics.update(parent)
-    parent_pixels = pixels_from_display(resolution)
-    parent_fitness = fitness(parent_pixels, source_pixels)
+    parent_bytes = bytes_from_display(resolution)
+    parent_fitness = fitness(parent_bytes, source_bytes)
     log("fitness = %f" % parent_fitness)
     while True:
         for event in pygame.event.get():
@@ -73,11 +73,11 @@ def main():
         child = copy.deepcopy(parent)
         child.mutate()
         graphics.update(child)
-        child_pixels = pixels_from_display(resolution)
-        child_fitness = fitness(child_pixels, source_pixels)
+        child_bytes = bytes_from_display(resolution)
+        child_fitness = fitness(child_bytes, source_bytes)
         if child_fitness < parent_fitness:
             parent = child
-            parent_pixels = child_pixels
+            parent_bytes = child_bytes
             parent_fitness = child_fitness
             log("fitness = %f" % parent_fitness)
 

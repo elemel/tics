@@ -22,7 +22,7 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 
 from OpenGL.GL import *
-import pygame, numpy
+import pygame, numpy, ctypes
 from tics.config import *
 
 class Graphics(object):
@@ -50,10 +50,14 @@ def init_opengl():
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-def pixels_from_surface(surface):
+def bytes_from_surface(surface):
     width, height = surface.get_size()
-    return numpy.array([[surface.get_at((x, height - y - 1))[:3]
-                         for x in xrange(width)] for y in xrange(height)])
+    bytes = []
+    for y in xrange(height):
+        for x in xrange(width):
+            pixel = surface.get_at((x, height - y - 1))
+            bytes.extend(pixel[:3])
+    return numpy.array(bytes)
 
 def surface_from_pixels(pixels):
     width, height = len(pixels), len(pixels[0])
@@ -62,12 +66,14 @@ def surface_from_pixels(pixels):
         for y, color in enumerate(column):
             surface.set_at((x, y), color)
     return surface
-    
-def pixels_from_display(resolution):
-    # The width and height manipulation below is a workaround. Without it,
-    # PyOpenGL returns distorted pixel data. Maybe I'm doing it wrong.
+
+def bytes_from_display(resolution):
+    gl = ctypes.cdll.LoadLibrary("libGL.so")
     width, height = resolution
-    pixels = glReadPixelsub(0, 0, max(width, height), max(width, height),
-                            GL_RGB)
-    assert width >= height
-    return pixels[:height]
+    byte_count = width * height * 3
+    ByteArray = ctypes.c_ubyte * byte_count
+    bytes = ByteArray()
+    gl.glPixelStorei(int(GL_PACK_ALIGNMENT), 1)
+    gl.glReadPixels(0, 0, width, height, int(GL_RGB), int(GL_UNSIGNED_BYTE),
+                    bytes)
+    return bytes
