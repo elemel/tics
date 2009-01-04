@@ -23,6 +23,7 @@
 
 from OpenGL.GL import *
 import pygame, numpy
+from tics.config import *
 
 class Graphics(object):
     def __init__(self, resolution):
@@ -32,8 +33,9 @@ class Graphics(object):
         glClear(GL_COLOR_BUFFER_BIT)
 
     def draw_triangle(self, color, vertices):
+        r, g, b, a = color
         glBegin(GL_TRIANGLES)
-        glColor4d(*color)
+        glColor4d(r, g, b, a * ALPHA_SCALE)
         for x, y in vertices:
             glVertex2d(2.0 * x - 1.0, 2.0 * y - 1.0)
         glEnd()        

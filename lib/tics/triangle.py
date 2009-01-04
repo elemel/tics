@@ -22,6 +22,31 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 
 import random, struct, numpy
+from tics.config import *
+
+def generate_vertex_comp(comp):
+    value = random.gauss(comp, GENERATE_VERTEX_SIGMA)
+    value = int(round(value))
+    if value == comp:
+        value = random.choice([comp - 1, comp + 1])
+    value = max(0, min(255, value))
+    return value
+
+def mutate_color_comp(comp):
+    value = random.gauss(comp, MUTATE_COLOR_SIGMA)
+    value = int(round(value))
+    if value == comp:
+        value = random.choice([comp - 1, comp + 1])
+    value = max(0, min(15, value))
+    return value
+
+def mutate_vertex_comp(comp):
+    value = random.gauss(comp, MUTATE_VERTEX_SIGMA)
+    value = int(round(value))
+    if value == comp:
+        value = random.choice([comp - 1, comp + 1])
+    value = max(0, min(255, value))
+    return value
 
 class Triangle(object):
     def __init__(self):
@@ -35,8 +60,10 @@ class Triangle(object):
     def generate(cls):
         triangle = Triangle()
         triangle.color[:] = [random.randrange(16) for _ in xrange(4)]
+        x = random.randrange(256)
+        y = random.randrange(256)
         for vertex in triangle.vertices:
-            vertex[:] = random.randrange(256), random.randrange(256)
+            vertex[:] = generate_vertex_comp(x), generate_vertex_comp(y)
         return triangle
 
     @classmethod
@@ -55,9 +82,14 @@ class Triangle(object):
             f.write(struct.pack("!BB", *vertex))
 
     def mutate(self):
-        if random.random() < 0.5:
-            self.color[random.randrange(4)] = random.randrange(16)
-        else:
-            i = random.randrange(3)
-            j = random.randrange(2)
-            self.vertices[i][j] = random.randrange(256)
+        mutate_func = random.choice([self.mutate_color, self.mutate_vertex])
+        mutate_func()
+
+    def mutate_color(self):
+        i = random.randrange(4)
+        self.color[i] = mutate_color_comp(self.color[i])
+
+    def mutate_vertex(self):
+        vertex = random.choice(self.vertices)
+        i = random.randrange(2)
+        vertex[i] = mutate_vertex_comp(vertex[i])

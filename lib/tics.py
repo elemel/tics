@@ -54,7 +54,7 @@ def main():
     try:
         parent = Image.load(target_path)
     except:
-        parent = Image.generate(resolution, 256)
+        parent = Image.generate(resolution, TRIANGLE_COUNT)
     graphics.update(parent)
     parent_pixels = pixels_from_display(resolution)
     parent_fitness = fitness(parent_pixels, source_pixels)
