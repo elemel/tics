@@ -24,24 +24,24 @@
 import random, struct, numpy
 from tics.config import *
 
-def generate_vertex_comp(comp):
-    value = random.gauss(comp, GENERATE_VERTEX_SIGMA)
+def generate_vertex_comp(comp, sigma):
+    value = random.gauss(comp, sigma)
     value = int(round(value))
     if value == comp:
         value = random.choice([comp - 1, comp + 1])
     value = max(0, min(255, value))
     return value
 
-def mutate_color_comp(comp):
-    value = random.gauss(comp, MUTATE_COLOR_SIGMA)
+def adjust_color_comp(comp, sigma):
+    value = random.gauss(comp, sigma)
     value = int(round(value))
     if value == comp:
         value = random.choice([comp - 1, comp + 1])
     value = max(0, min(15, value))
     return value
 
-def mutate_vertex_comp(comp):
-    value = random.gauss(comp, MUTATE_VERTEX_SIGMA)
+def adjust_vertex_comp(comp, sigma):
+    value = random.gauss(comp, sigma)
     value = int(round(value))
     if value == comp:
         value = random.choice([comp - 1, comp + 1])
@@ -62,8 +62,11 @@ class Triangle(object):
         triangle.color[:] = [random.randrange(16) for _ in xrange(4)]
         x = random.randrange(256)
         y = random.randrange(256)
+        sigma = random.choice([VERTEX_SIGMA_SMALL, VERTEX_SIGMA_MEDIUM,
+                               VERTEX_SIGMA_LARGE])
         for vertex in triangle.vertices:
-            vertex[:] = generate_vertex_comp(x), generate_vertex_comp(y)
+            vertex[:] = [generate_vertex_comp(x, sigma),
+                         generate_vertex_comp(y, sigma)]
         return triangle
 
     @classmethod
@@ -82,14 +85,16 @@ class Triangle(object):
             f.write(struct.pack("!BB", *vertex))
 
     def mutate(self):
-        mutate_func = random.choice([self.mutate_color, self.mutate_vertex])
+        mutate_func = random.choice([self.adjust_color, self.adjust_vertex])
         mutate_func()
 
-    def mutate_color(self):
+    def adjust_color(self):
         i = random.randrange(4)
-        self.color[i] = mutate_color_comp(self.color[i])
+        self.color[i] = adjust_color_comp(self.color[i], COLOR_SIGMA)
 
-    def mutate_vertex(self):
+    def adjust_vertex(self):
         vertex = random.choice(self.vertices)
         i = random.randrange(2)
-        vertex[i] = mutate_vertex_comp(vertex[i])
+        sigma = random.choice([VERTEX_SIGMA_SMALL, VERTEX_SIGMA_MEDIUM,
+                               VERTEX_SIGMA_LARGE])
+        vertex[i] = adjust_vertex_comp(vertex[i], sigma)
