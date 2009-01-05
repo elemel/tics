@@ -21,7 +21,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-import sys, os, numpy, random, copy
+import sys, os, numpy, random
 from pygame.locals import *
 from tics.graphics import *
 from tics.image import *
@@ -71,8 +71,7 @@ def main():
                     log("could not save target file: %s" % target_path)
                     sys.exit(1)
                 sys.exit(0)
-        child = copy.deepcopy(parent)
-        child.mutate()
+        child = parent.mutate()
         graphics.update(child)
         child_bytes = bytes_from_display(resolution)
         child_fitness = fitness(child_bytes, source_bytes)

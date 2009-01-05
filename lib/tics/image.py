@@ -25,10 +25,21 @@ import random, struct
 from tics.triangle import *
 
 class Image(object):
-    def __init__(self):
-        self.width = 0
-        self.height = 0
-        self.triangles = []
+    def __init__(self, (width, height), triangles):
+        self.__width, self.__height = width, height
+        self.__triangles = tuple(triangles)
+
+    @property
+    def width(self):
+        return self.__width
+
+    @property
+    def height(self):
+        return self.__height
+        
+    @property
+    def triangles(self):
+        return self.__triangles
 
     def draw(self, graphics):
         for triangle in self.triangles:
@@ -36,60 +47,62 @@ class Image(object):
 
     @classmethod
     def generate(cls, resolution,  triangle_count):
-        image = Image()
-        image.resolution = resolution
-        for _ in xrange(triangle_count):
-            image.triangles.append(Triangle.generate())
-        return image
+        triangles = [Triangle.generate() for _ in xrange(triangle_count)]
+        return Image(resolution, triangles)
 
     @classmethod
     def read(cls, f):
-        image = Image()
         width, height, triangle_count = struct.unpack("!HHH", f.read(6))
-        image.resolution = width, height
-        for _ in xrange(triangle_count):
-            image.triangles.append(Triangle.read(f))
-        return image
+        triangles = [Triangle.read(f) for _ in xrange(triangle_count)]
+        return Image((width, height), triangles)
 
     @classmethod        
     def load(cls, path):
         f = open(path, "rb")
-        image = Image.read(f)
-        f.close()
-        return image
+        try:
+            return Image.read(f)
+        finally:
+            f.close()
 
     def write(self, f):
-        width, height = self.resolution
-        f.write(struct.pack("!HHH", width, height, len(self.triangles)))
+        f.write(struct.pack("!HHH", self.width, self.height,
+                            len(self.triangles)))
         for triangle in self.triangles:
             triangle.write(f)
 
     def save(self, path):
         f = open(path, "wb")
-        self.write(f)
-        f.close()
+        try:
+            self.write(f)
+        finally:
+            f.close()
 
     def mutate(self):
         if random.random() < 0.5:
-            triangle = random.choice(self.triangles)
-            triangle.mutate()
+            triangles = list(self.triangles)
+            i = random.randrange(len(triangles))
+            triangles[i] = triangles[i].mutate()
+            return Image((self.width, self.height), triangles)
         else:
             mutate_func = random.choice([self.move_triangle,
                                          self.replace_triangle])
-            mutate_func()
+            return mutate_func()
 
     def move_triangle(self):
-        i = random.randrange(len(self.triangles))
-        j = random.randrange(len(self.triangles))
-        triangle = self.triangles.pop(i)
-        self.triangles.insert(j, triangle)
+        triangles = list(self.triangles)
+        i = random.randrange(len(triangles))
+        j = random.randrange(len(triangles))
+        triangle = triangles.pop(i)
+        triangles.insert(j, triangle)
+        return Image((self.width, self.height), triangles)
 
     def replace_triangle(self):
-        i = random.randrange(len(self.triangles))
+        triangles = list(self.triangles)
+        i = random.randrange(len(triangles))
         if random.random() < 0.5:
-            j = len(self.triangles)
+            j = len(triangles)
         else:
-            j = random.randrange(len(self.triangles))
-        self.triangles.pop(i)
-        triangle = Triangle.generate()
-        self.triangles.insert(j, triangle)
+            j = random.randrange(len(triangles))
+        triangles.pop(i)
+        triangles.insert(j, Triangle.generate())
+        return Image((self.width, self.height), triangles)
