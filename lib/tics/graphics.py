@@ -32,13 +32,13 @@ class Graphics(object):
     def clear(self):
         glClear(GL_COLOR_BUFFER_BIT)
 
-    def draw_triangle(self, color, vertices):
-        r, g, b, a = color
+    def draw_triangle(self, (r, g, b, a), (x1, y1), (x2, y2), (x3, y3)):
         glBegin(GL_TRIANGLES)
         glColor4d(r, g, b, a * ALPHA_SCALE)
-        for x, y in vertices:
-            glVertex2d(2.0 * x - 1.0, 2.0 * y - 1.0)
-        glEnd()        
+        glVertex2d(2.0 * x1 - 1.0, 2.0 * y1 - 1.0)
+        glVertex2d(2.0 * x2 - 1.0, 2.0 * y2 - 1.0)
+        glVertex2d(2.0 * x3 - 1.0, 2.0 * y3 - 1.0)
+        glEnd()
 
     def update(self, image):
         self.clear()

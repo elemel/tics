@@ -21,7 +21,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-import random, struct, numpy
+import random, struct
 from tics.config import *
 
 def generate_vertex_comp(comp, sigma):
@@ -50,11 +50,16 @@ def adjust_vertex_comp(comp, sigma):
 
 class Triangle(object):
     def __init__(self):
-        self.color = numpy.array([0, 0, 0, 0])
-        self.vertices = numpy.array([[0, 0], [0, 0], [0, 0]])
+        self.color = [0, 0, 0, 0]
+        self.vertices = [[0, 0], [0, 0], [0, 0]]
 
     def draw(self, graphics):
-        graphics.draw_triangle(self.color / 15.0, self.vertices / 255.0)
+        r, g, b, a = self.color
+        (x1, y1), (x2, y2), (x3, y3) = self.vertices
+        graphics.draw_triangle((r / 15.0, g / 15.0, b / 15.0, a / 15.0),
+                               (x1 / 255.0, y1 / 255.0),
+                               (x2 / 255.0, y2 / 255.0),
+                               (x3 / 255.0, y3 / 255.0))
 
     @classmethod
     def generate(cls):
