@@ -59,14 +59,6 @@ def bytes_from_surface(surface):
             bytes.extend(pixel[:3])
     return numpy.array(bytes)
 
-def surface_from_pixels(pixels):
-    width, height = len(pixels), len(pixels[0])
-    surface = pygame.surface.Surface((width, height))
-    for x, column in enumerate(pixels):
-        for y, color in enumerate(column):
-            surface.set_at((x, y), color)
-    return surface
-
 def bytes_from_display(resolution):
     gl = ctypes.cdll.LoadLibrary("libGL.so")
     width, height = resolution

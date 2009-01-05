@@ -46,6 +46,7 @@ def main():
         log("could not load source file: %s" % source_path)
         sys.exit(1)
     resolution = source_surface.get_size()
+    source_array = pygame.surfarray.pixels3d(source_surface)
     source_bytes = bytes_from_surface(source_surface)
     pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
     pygame.display.set_caption("tics: %s" % os.path.basename(source_path))
