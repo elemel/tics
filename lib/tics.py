@@ -49,16 +49,16 @@ def main():
     pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
     pygame.display.set_caption("tics: %s" % os.path.basename(source_path))
     init_opengl()
-    graphics = Graphics(resolution)
     try:
         parent = Image.load(target_path)
     except:
         parent = Image.generate(resolution, TRIANGLE_COUNT)
     bytes = alloc_bytes(resolution)
-    graphics.update(parent)
+    update_display(parent)
     bytes_from_display(resolution, bytes)
     parent_fitness = fitness(bytes, source_bytes)
-    log("fitness = %f" % parent_fitness)
+    iteration = 0
+    log("iteration = %d, fitness = %f" % (iteration, parent_fitness))
     while True:
         for event in pygame.event.get():
             if (event.type == QUIT or
@@ -71,13 +71,14 @@ def main():
                     sys.exit(1)
                 sys.exit(0)
         child = parent.mutate()
-        graphics.update(child)
+        update_display(child)
         bytes_from_display(resolution, bytes)
         child_fitness = fitness(bytes, source_bytes)
         if child_fitness < parent_fitness:
             parent = child
             parent_fitness = child_fitness
-            log("fitness = %f" % parent_fitness)
-
+            log("iteration = %d, fitness = %f" % (iteration, parent_fitness))
+        iteration += 1
+ 
 if __name__ == '__main__':
     main()

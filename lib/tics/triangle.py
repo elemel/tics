@@ -21,12 +21,16 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-import random, struct
+import random, struct, ctypes
 from tics.config import *
+
+draw_dll = ctypes.cdll.LoadLibrary("libtics_draw.so")
 
 COLOR_ATTR = list("rgba")
 VERTEX_ATTR = "x1 y1 x2 y2 x3 y3".split()
 ATTR = COLOR_ATTR + VERTEX_ATTR
+
+TriangleArray = ctypes.c_double * 10
 
 class Triangle(object):
     def __init__(self, r=0, g=0, b=0, a=0, x1=0, x2=0, y1=0, y2=0, x3=0, y3=0):
@@ -40,6 +44,18 @@ class Triangle(object):
         self.__y2 = y2
         self.__x3 = x3
         self.__y3 = y3
+
+        self.__array = TriangleArray()
+        self.__array[0] = r / 15.0
+        self.__array[1] = g / 15.0
+        self.__array[2] = b / 15.0
+        self.__array[3] = a / 15.0 * ALPHA_SCALE
+        self.__array[4] = x1 / 255.0
+        self.__array[5] = y1 / 255.0
+        self.__array[6] = x2 / 255.0
+        self.__array[7] = y2 / 255.0
+        self.__array[8] = x3 / 255.0
+        self.__array[9] = y3 / 255.0
         
     @property
     def r(self):
@@ -81,12 +97,8 @@ class Triangle(object):
     def y3(self):
         return self.__y3
 
-    def draw(self, graphics):
-        graphics.draw_triangle((self.r / 15.0, self.g / 15.0,
-                                self.b / 15.0, self.a / 15.0),
-                               (self.x1 / 255.0, self.y1 / 255.0),
-                               (self.x2 / 255.0, self.y2 / 255.0),
-                               (self.x3 / 255.0, self.y3 / 255.0))
+    def draw(self):
+        draw_dll.triangle(self.__array)
 
     @classmethod
     def generate(cls):

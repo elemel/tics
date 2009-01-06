@@ -41,9 +41,9 @@ class Image(object):
     def triangles(self):
         return self.__triangles
 
-    def draw(self, graphics):
+    def draw(self):
         for triangle in self.triangles:
-            triangle.draw(graphics)
+            triangle.draw()
 
     @classmethod
     def generate(cls, resolution,  triangle_count):

@@ -23,15 +23,14 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-double fitness(unsigned char *a, int n, unsigned char *b)
-{
-    int i, d;
-    double f;
+#include <GL/gl.h>
 
-    f = 0;
-    for (i = 0; i != n; ++i) {
-        d = a[i] - b[i];
-        f += d * d;
-    }
-    return f / n;
+void triangle(double *data)
+{
+    glBegin(GL_TRIANGLES);
+    glColor4d(data[0], data[1], data[2], data[3]);
+    glVertex2d(2.0 * data[4] - 1.0, 2.0 * data[5] - 1.0);
+    glVertex2d(2.0 * data[6] - 1.0, 2.0 * data[7] - 1.0);
+    glVertex2d(2.0 * data[8] - 1.0, 2.0 * data[9] - 1.0);
+    glEnd();
 }

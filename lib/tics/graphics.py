@@ -25,27 +25,12 @@ from OpenGL.GL import *
 import pygame, numpy, ctypes
 from tics.config import *
 
-gl_lib = ctypes.cdll.LoadLibrary("libGL.so")
+gl_dll = ctypes.cdll.LoadLibrary("libGL.so")
 
-class Graphics(object):
-    def __init__(self, resolution):
-        self.resolution = resolution
-
-    def clear(self):
-        glClear(GL_COLOR_BUFFER_BIT)
-
-    def draw_triangle(self, (r, g, b, a), (x1, y1), (x2, y2), (x3, y3)):
-        glBegin(GL_TRIANGLES)
-        glColor4d(r, g, b, a * ALPHA_SCALE)
-        glVertex2d(2.0 * x1 - 1.0, 2.0 * y1 - 1.0)
-        glVertex2d(2.0 * x2 - 1.0, 2.0 * y2 - 1.0)
-        glVertex2d(2.0 * x3 - 1.0, 2.0 * y3 - 1.0)
-        glEnd()
-
-    def update(self, image):
-        self.clear()
-        image.draw(self)
-        pygame.display.flip()
+def update_display(image):
+    glClear(GL_COLOR_BUFFER_BIT)
+    image.draw()
+    pygame.display.flip()
 
 def init_opengl():
     glClearColor(0.0, 0.0, 0.0, 0.0)
@@ -70,6 +55,6 @@ def bytes_from_surface(surface):
     return bytes
 
 def bytes_from_display((width, height), bytes):
-    gl_lib.glPixelStorei(int(GL_PACK_ALIGNMENT), 1)
-    gl_lib.glReadPixels(0, 0, width, height, int(GL_RGB),
+    gl_dll.glPixelStorei(int(GL_PACK_ALIGNMENT), 1)
+    gl_dll.glReadPixels(0, 0, width, height, int(GL_RGB),
                         int(GL_UNSIGNED_BYTE), bytes)
