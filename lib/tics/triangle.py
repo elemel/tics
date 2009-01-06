@@ -36,9 +36,9 @@ class Triangle(object):
         for attr in ATTR:
             value = kwargs.get(attr, 0)
             if attr in COLOR_ATTR:
-                assert 0 <= value <= 15
+                value = max(0, min(15, value))
             else:
-                assert 0 <= value <= 255
+                value = max(0, min(255, value))
             setattr(self, attr, value)
         self.data = TriangleData()
         for i, attr in enumerate(ATTR):
@@ -52,10 +52,17 @@ class Triangle(object):
     @classmethod
     def generate(cls):
         kwargs = {}
-        for attr in COLOR_ATTR:
-            kwargs[attr] = random.randrange(16)
-        for attr in VERTEX_ATTR:
-            kwargs[attr] = random.randrange(256)
+        r, g, b = [random.randrange(16) for _ in xrange(3)]
+        a = random.randrange(8)
+        x, y = [random.randrange(256) for _ in xrange(2)]
+        d = 1 << random.randrange(8)
+        for i in "123":
+            kwargs["r" + i] = r
+            kwargs["g" + i] = g
+            kwargs["b" + i] = b
+            kwargs["a" + i] = a
+            kwargs["x" + i] = x + random.choice([-1, 1]) * random.randrange(d)
+            kwargs["y" + i] = y + random.choice([-1, 1]) * random.randrange(d)
         return Triangle(**kwargs)
 
     @classmethod
@@ -83,19 +90,14 @@ class Triangle(object):
     def mutate_color(self):
         kwargs = dict((attr, getattr(self, attr)) for attr in ATTR)
         attr = random.choice(COLOR_ATTR)
-        if random.random() < 0.5:
-            kwargs[attr] += random.choice([-1, 1])
-            kwargs[attr] = max(0, min(15, kwargs[attr]))
-        else:
-            kwargs[attr] = random.randrange(16)
+        d = 1 << random.randrange(4)
+        kwargs[attr] += random.choice([-1, 1]) * random.randrange(d)
         return Triangle(**kwargs)
         
     def mutate_vertex(self):
         kwargs = dict((attr, getattr(self, attr)) for attr in ATTR)
-        attr = random.choice(VERTEX_ATTR)
-        if random.random() < 0.5:
-            kwargs[attr] += random.choice([-1, 1])
-            kwargs[attr] = max(0, min(255, kwargs[attr]))
-        else:
-            kwargs[attr] = random.randrange(256)
+        i = random.choice("123")
+        d = 1 << random.randrange(8)
+        for c in "xy":
+            kwargs[c + i] += random.choice([-1, 1]) * random.randrange(d)
         return Triangle(**kwargs)
