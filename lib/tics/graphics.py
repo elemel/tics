@@ -25,6 +25,8 @@ from OpenGL.GL import *
 import pygame, numpy, ctypes
 from tics.config import *
 
+gl_lib = ctypes.cdll.LoadLibrary("libGL.so")
+
 class Graphics(object):
     def __init__(self, resolution):
         self.resolution = resolution
@@ -50,11 +52,14 @@ def init_opengl():
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-def bytes_from_surface(surface):
-    width, height = surface.get_size()
+def alloc_bytes((width, height)):
     byte_count = width * height * 3
     ByteArray = ctypes.c_ubyte * byte_count
-    bytes = ByteArray()
+    return ByteArray()
+
+def bytes_from_surface(surface):
+    width, height = surface.get_size()
+    bytes = alloc_bytes((width, height))
     i = 0
     for y in xrange(height):
         for x in xrange(width):
@@ -64,13 +69,7 @@ def bytes_from_surface(surface):
                 i += 1
     return bytes
 
-def bytes_from_display(resolution):
-    gl = ctypes.cdll.LoadLibrary("libGL.so")
-    width, height = resolution
-    byte_count = width * height * 3
-    ByteArray = ctypes.c_ubyte * byte_count
-    bytes = ByteArray()
-    gl.glPixelStorei(int(GL_PACK_ALIGNMENT), 1)
-    gl.glReadPixels(0, 0, width, height, int(GL_RGB), int(GL_UNSIGNED_BYTE),
-                    bytes)
-    return bytes
+def bytes_from_display((width, height), bytes):
+    gl_lib.glPixelStorei(int(GL_PACK_ALIGNMENT), 1)
+    gl_lib.glReadPixels(0, 0, width, height, int(GL_RGB),
+                        int(GL_UNSIGNED_BYTE), bytes)

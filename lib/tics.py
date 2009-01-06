@@ -54,9 +54,10 @@ def main():
         parent = Image.load(target_path)
     except:
         parent = Image.generate(resolution, TRIANGLE_COUNT)
+    bytes = alloc_bytes(resolution)
     graphics.update(parent)
-    parent_bytes = bytes_from_display(resolution)
-    parent_fitness = fitness(parent_bytes, source_bytes)
+    bytes_from_display(resolution, bytes)
+    parent_fitness = fitness(bytes, source_bytes)
     log("fitness = %f" % parent_fitness)
     while True:
         for event in pygame.event.get():
@@ -71,11 +72,10 @@ def main():
                 sys.exit(0)
         child = parent.mutate()
         graphics.update(child)
-        child_bytes = bytes_from_display(resolution)
-        child_fitness = fitness(child_bytes, source_bytes)
+        bytes_from_display(resolution, bytes)
+        child_fitness = fitness(bytes, source_bytes)
         if child_fitness < parent_fitness:
             parent = child
-            parent_bytes = child_bytes
             parent_fitness = child_fitness
             log("fitness = %f" % parent_fitness)
 
