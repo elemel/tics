@@ -52,12 +52,17 @@ def init_opengl():
 
 def bytes_from_surface(surface):
     width, height = surface.get_size()
-    bytes = []
+    byte_count = width * height * 3
+    ByteArray = ctypes.c_ubyte * byte_count
+    bytes = ByteArray()
+    i = 0
     for y in xrange(height):
         for x in xrange(width):
-            pixel = surface.get_at((x, height - y - 1))
-            bytes.extend(pixel[:3])
-    return numpy.array(bytes)
+            color = surface.get_at((x, height - y - 1))
+            for c in color[:3]:
+                bytes[i] = c
+                i += 1
+    return bytes
 
 def bytes_from_display(resolution):
     gl = ctypes.cdll.LoadLibrary("libGL.so")

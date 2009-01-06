@@ -25,9 +25,7 @@ import sys, os, numpy, random
 from pygame.locals import *
 from tics.graphics import *
 from tics.image import *
-
-def fitness(pixels, source_pixels):
-    return numpy.square(pixels - source_pixels).mean()
+from tics.c_fitness import fitness
 
 def log(message):
     sys.stderr.write("tics: %s\n" % message)
