@@ -34,16 +34,17 @@ TriangleData = ctypes.c_double * 18
 class Triangle(object):
     def __init__(self, **kwargs):
         for attr in ATTR:
-            value = kwargs.get(attr, 0)
+            value = kwargs.pop(attr, 0)
             if attr in COLOR_ATTR:
                 value = max(0, min(15, value))
             else:
                 value = max(0, min(255, value))
             setattr(self, attr, value)
+
         self.data = TriangleData()
         for i, attr in enumerate(ATTR):
-            value = kwargs.get(attr, 0)
-            value /= 15.0 if attr[0] in "rgba" else 255.0
+            value = getattr(self, attr)
+            value /= 15.0 if attr in COLOR_ATTR else 255.0
             self.data[i] = value
 
     def draw(self):
