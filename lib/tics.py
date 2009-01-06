@@ -52,7 +52,7 @@ def main():
     try:
         parent = Image.load(target_path)
     except:
-        parent = Image.generate(resolution, TRIANGLE_COUNT)
+        parent = Image.generate(resolution, 256)
     bytes = alloc_bytes(resolution)
     update_display(parent)
     bytes_from_display(resolution, bytes)

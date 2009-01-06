@@ -22,83 +22,32 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 
 import random, struct, ctypes
-from tics.config import *
 
 draw_dll = ctypes.cdll.LoadLibrary("libtics_draw.so")
 
-COLOR_ATTR = list("rgba")
-VERTEX_ATTR = "x1 y1 x2 y2 x3 y3".split()
-ATTR = COLOR_ATTR + VERTEX_ATTR
+ATTR = [c + i for i in "123" for c in "rgbaxy"]
+COLOR_ATTR = [attr for attr in ATTR if attr[0] in "rgba"]
+VERTEX_ATTR = [attr for attr in ATTR if attr[0] in "xy"]
 
-TriangleArray = ctypes.c_double * 10
+TriangleData = ctypes.c_double * 18
 
 class Triangle(object):
-    def __init__(self, r=0, g=0, b=0, a=0, x1=0, x2=0, y1=0, y2=0, x3=0, y3=0):
-        self.__r = r
-        self.__g = g
-        self.__b = b
-        self.__a = a
-        self.__x1 = x1
-        self.__y1 = y1
-        self.__x2 = x2
-        self.__y2 = y2
-        self.__x3 = x3
-        self.__y3 = y3
-
-        self.__array = TriangleArray()
-        self.__array[0] = r / 15.0
-        self.__array[1] = g / 15.0
-        self.__array[2] = b / 15.0
-        self.__array[3] = a / 15.0 * ALPHA_SCALE
-        self.__array[4] = x1 / 255.0
-        self.__array[5] = y1 / 255.0
-        self.__array[6] = x2 / 255.0
-        self.__array[7] = y2 / 255.0
-        self.__array[8] = x3 / 255.0
-        self.__array[9] = y3 / 255.0
-        
-    @property
-    def r(self):
-        return self.__r
-
-    @property
-    def g(self):
-        return self.__g
-        
-    @property
-    def b(self):
-        return self.__b
-        
-    @property
-    def a(self):
-        return self.__a
-    
-    @property
-    def x1(self):
-        return self.__x1
-
-    @property
-    def y1(self):
-        return self.__y1
-
-    @property
-    def x2(self):
-        return self.__x2
-
-    @property
-    def y2(self):
-        return self.__y2
-
-    @property
-    def x3(self):
-        return self.__x3
-
-    @property
-    def y3(self):
-        return self.__y3
+    def __init__(self, **kwargs):
+        for attr in ATTR:
+            value = kwargs.get(attr, 0)
+            if attr in COLOR_ATTR:
+                assert 0 <= value <= 15
+            else:
+                assert 0 <= value <= 255
+            setattr(self, attr, value)
+        self.data = TriangleData()
+        for i, attr in enumerate(ATTR):
+            value = kwargs.get(attr, 0)
+            value /= 15.0 if attr[0] in "rgba" else 255.0
+            self.data[i] = value
 
     def draw(self):
-        draw_dll.triangle(self.__array)
+        draw_dll.triangle(self.data)
 
     @classmethod
     def generate(cls):
@@ -111,18 +60,22 @@ class Triangle(object):
 
     @classmethod
     def read(cls, f):
-        rg, ba = struct.unpack("!BB", f.read(2))
-        r, g = divmod(rg, 16)
-        b, a = divmod(ba, 16)
-        x1, y1, x2, y2, x3, y3 = struct.unpack("!BBBBBB", f.read(6))
-        return Triangle(r=r, g=g, b=b, a=a,
-                        x1=x1, y1=y1, x2=x2, y2=y2, x3=x3, y3=y3)
+        values = []
+        for _ in xrange(3):
+            rg, ba = struct.unpack("!BB", f.read(2))
+            values.extend(divmod(rg, 16))
+            values.extend(divmod(ba, 16))
+            values.extend(struct.unpack("!BB", f.read(2)))
+        kwargs = dict(zip(ATTR, values))
+        return Triangle(**kwargs)
 
     def write(self, f):
-        f.write(struct.pack("!BB", self.r * 16 + self.g, self.b * 16 + self.a))
-        f.write(struct.pack("!BBBBBB", self.x1, self.y1,
-                            self.x2, self.y2, self.x3, self.y3))
-
+        for i in "123":
+            r, g, b, a = [getattr(self, c + i) for c in "rgba"]
+            f.write(struct.pack("!BB", r * 16 + g, b * 16 + a))
+            x, y = [getattr(self, c + i) for c in "xy"]
+            f.write(struct.pack("!BB", x, y))
+            
     def mutate(self):
         mutate_func = random.choice([self.mutate_color, self.mutate_vertex])
         return mutate_func()

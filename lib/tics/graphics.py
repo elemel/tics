@@ -23,7 +23,6 @@
 
 from OpenGL.GL import *
 import pygame, numpy, ctypes
-from tics.config import *
 
 gl_dll = ctypes.cdll.LoadLibrary("libGL.so")
 

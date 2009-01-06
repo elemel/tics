@@ -26,20 +26,9 @@ from tics.triangle import *
 
 class Image(object):
     def __init__(self, (width, height), triangles):
-        self.__width, self.__height = width, height
-        self.__triangles = tuple(triangles)
-
-    @property
-    def width(self):
-        return self.__width
-
-    @property
-    def height(self):
-        return self.__height
-        
-    @property
-    def triangles(self):
-        return self.__triangles
+        self.width = width
+        self.height = height
+        self.triangles = triangles
 
     def draw(self):
         for triangle in self.triangles:

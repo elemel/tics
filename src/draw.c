@@ -30,7 +30,9 @@ void triangle(double *data)
     glBegin(GL_TRIANGLES);
     glColor4d(data[0], data[1], data[2], data[3]);
     glVertex2d(2.0 * data[4] - 1.0, 2.0 * data[5] - 1.0);
-    glVertex2d(2.0 * data[6] - 1.0, 2.0 * data[7] - 1.0);
-    glVertex2d(2.0 * data[8] - 1.0, 2.0 * data[9] - 1.0);
+    glColor4d(data[6], data[7], data[8], data[9]);
+    glVertex2d(2.0 * data[10] - 1.0, 2.0 * data[11] - 1.0);
+    glColor4d(data[12], data[13], data[14], data[15]);
+    glVertex2d(2.0 * data[16] - 1.0, 2.0 * data[17] - 1.0);
     glEnd();
 }
