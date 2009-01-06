@@ -39,12 +39,11 @@ def main():
     target_path = "%s.tics" % os.path.splitext(source_path)[0]
     pygame.init()
     try:
-        source_surface = pygame.image.load(source_path)
+        source_surface = pygame.image.load(source_path).convert(32)
     except:
         log("could not load source file: %s" % source_path)
         sys.exit(1)
     resolution = source_surface.get_size()
-    source_array = pygame.surfarray.pixels3d(source_surface)
     source_bytes = bytes_from_surface(source_surface)
     pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
     pygame.display.set_caption("tics: %s" % os.path.basename(source_path))

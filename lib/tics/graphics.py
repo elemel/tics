@@ -26,15 +26,15 @@ import pygame, numpy, ctypes
 
 gl_dll = ctypes.cdll.LoadLibrary("libGL.so")
 
-def update_display(image):
-    glClear(GL_COLOR_BUFFER_BIT)
-    image.draw()
-    pygame.display.flip()
-
 def init_opengl():
     glClearColor(0.0, 0.0, 0.0, 0.0)
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+def update_display(image):
+    glClear(GL_COLOR_BUFFER_BIT)
+    image.draw()
+    pygame.display.flip()
 
 def alloc_bytes((width, height)):
     byte_count = width * height * 3
