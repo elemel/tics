@@ -62,7 +62,6 @@ def main():
         for event in pygame.event.get():
             if (event.type == QUIT or
                 (event.type == KEYDOWN and event.key == K_ESCAPE)):
-                parent.save(target_path)
                 try:
                     parent.save(target_path)
                 except:
