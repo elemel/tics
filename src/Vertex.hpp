@@ -1,4 +1,3 @@
-#include "Byte.hpp"
 #include <vector>
 
 namespace tics {
@@ -11,6 +10,6 @@ namespace tics {
         void draw() const;
     
     private:
-        Byte r_, g_, b_, a_, x_, y_;
+        unsigned char r_, g_, b_, a_, x_, y_;
     };
 }

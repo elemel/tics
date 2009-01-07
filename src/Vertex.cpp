@@ -1,4 +1,5 @@
 #include "Vertex.hpp"
+#include "clamp.hpp"
 #include <GL/gl.h>
 
 namespace tics {
