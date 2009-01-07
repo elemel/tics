@@ -23,8 +23,8 @@
 
 import ctypes
 
-fitness_dll = ctypes.cdll.LoadLibrary("libtics_fitness.so")
-fitness_dll.fitness.restype = ctypes.c_double
+tics_dll = ctypes.cdll.LoadLibrary("libtics.so")
+tics_dll.fitness.restype = ctypes.c_double
 
 def fitness(current, goal):
-    return fitness_dll.fitness(current, len(current), goal)
+    return tics_dll.fitness(current, len(current), goal)

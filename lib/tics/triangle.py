@@ -23,7 +23,7 @@
 
 import random, struct, ctypes
 
-draw_dll = ctypes.cdll.LoadLibrary("libtics_draw.so")
+tics_dll = ctypes.cdll.LoadLibrary("libtics.so")
 
 # r1g1, b1a1, x1, y1, r2g2, b2a2, x2, y2, r3g3, b3a3, x3, y3
 TriangleBytes = ctypes.c_ubyte * 12
@@ -46,7 +46,7 @@ class Triangle(object):
             self.__bytes[i] = b
 
     def draw(self):
-        draw_dll.triangle(self.__bytes)
+        tics_dll.triangle(self.__bytes)
 
     @classmethod
     def generate(cls):
