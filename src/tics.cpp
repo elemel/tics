@@ -4,6 +4,7 @@
 #include <time.h>
 #include <GL/gl.h>
 #include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 
 using std::cerr;
 using std::endl;
@@ -42,11 +43,17 @@ namespace {
 
 int main(int argc, char **argv)
 {
-    if (argc != 1) {
+    if (argc != 2) {
         cerr << "tics: " << "missing file operand" << endl;
+        return 1;
     }
-    int width = 640, height = 480;
-    if (!init_video(640, 480)) {
+    SDL_Surface *original = IMG_Load(argv[1]);
+    if (original == 0) {
+        cerr << "tics: " << SDL_GetError() << endl;
+        return 1;
+    }
+    int width = original->w, height = original->h;
+    if (!init_video(width, height)) {
         return 1;
     }
     srand(time(0));

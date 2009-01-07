@@ -1,5 +1,8 @@
-tics : tics.o Byte.o Image.o Triangle.o Vertex.o Image.hpp
-	g++ -o tics tics.o Byte.o Image.o Triangle.o Vertex.o -lGL -lSDL
+OBJ=	tics.o Byte.o Image.o Triangle.o Vertex.o
+LDFLAGS=	-lGL -lSDL -lSDL_image
+
+tics : $(OBJ) Image.hpp
+	g++ -o tics $(OBJ) $(LDFLAGS)
 
 tics.o : tics.cpp
 	g++ -c -o tics.o tics.cpp
