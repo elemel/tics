@@ -21,6 +21,8 @@ namespace tics {
     private:
         boost::shared_array<unsigned char> data_;
         int width_, height_, depth_;
+        
+        void resize(int width, int height, int depth);
     };
 }
 

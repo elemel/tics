@@ -2,9 +2,12 @@
 #include <GL/gl.h>
 #include <SDL/SDL_image.h>
 #include <boost/shared_ptr.hpp>
+#include <iostream>
 #include <stdexcept>
 
 using boost::shared_ptr;
+using std::clog;
+using std::endl;
 using std::logic_error;
 using std::runtime_error;
 
@@ -48,15 +51,14 @@ namespace tics {
             throw runtime_error(SDL_GetError());
         }
         original = convert(*original);
-        width_ = original->w;
-        height_ = original->h;
-        depth_ = 4;
+        resize(original->w, original->h, 4);
     }
     
     void Pixels::copy_display(int width, int height)
     {
+        resize(width, height, 4);
         glPixelStorei(GL_PACK_ALIGNMENT, 0);
-        glReadPixels(0, 0, width, height, GL_UNSIGNED_BYTE, GL_RGBA,
+        glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE,
                      data_.get());
     }
 
@@ -78,4 +80,14 @@ namespace tics {
     int Pixels::width() const { return width_; }
     int Pixels::height() const { return height_; }
     int Pixels::depth() const { return depth_; }
+
+    void Pixels::resize(int width, int height, int depth)
+    {
+        if (width_ != width || height_ != height || depth_ != depth) {
+            data_.reset(new unsigned char[width * height * depth]);
+            width_ = width;
+            height_ = height;
+            depth_ = depth;
+        }
+    }
 }
