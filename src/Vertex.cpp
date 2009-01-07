@@ -1,14 +1,9 @@
 #include "Vertex.hpp"
 #include "clamp.hpp"
+#include "random.hpp"
 #include <GL/gl.h>
 
 namespace tics {
-    namespace {
-        int random_sign() {
-            return rand() % 2 ? -1 : 1;
-        }
-    }
-    
     Vertex::Vertex()
         : r_(0), g_(0), b_(0), a_(0), x_(0), y_(0)
     { }
