@@ -1,14 +1,32 @@
-libtics.so : draw.o fitness.o
-	ld -shared -o libtics.so draw.o fitness.o
+tics : tics.o Byte.o Image.o Triangle.o Vertex.o Image.hpp
+	g++ -o tics tics.o Byte.o Image.o Triangle.o Vertex.o -lGL -lSDL
 
-draw.o : draw.c
-	cc -c -o draw.o draw.c
+tics.o : tics.cpp
+	g++ -c -o tics.o tics.cpp
 
-fitness.o : fitness.c
-	cc -c -o fitness.o fitness.c
+Byte.o : Byte.cpp Byte.hpp
+	g++ -c -o Byte.o Byte.cpp
 
-install : libtics.so
-	install -m 644 libtics.so /usr/local/lib
+Image.o : Image.cpp Image.hpp
+	g++ -c -o Image.o Image.cpp
+
+Triangle.o : Triangle.cpp Triangle.hpp
+	g++ -c -o Triangle.o Triangle.cpp
+
+Vertex.o : Vertex.cpp Vertex.hpp
+	g++ -c -o Vertex.o Vertex.cpp
+
+install : tics
+	install -m 755 tics /usr/local/bin
+
+Image.hpp : Triangle.hpp
+	touch Image.hpp
+
+Triangle.hpp : Vertex.hpp
+	touch Triangle.hpp
+
+Vertex.hpp : Byte.hpp
+	touch Vertex.hpp
 
 clean:
-	rm -f *.o *.so
+	rm -f tics *.o
