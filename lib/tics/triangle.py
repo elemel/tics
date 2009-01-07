@@ -32,6 +32,12 @@ def clamp(min_value, value, max_value):
     value = min(value, max_value)
     return value
 
+def clamp_byte(b):
+    return clamp(0, b, 255)
+
+def clamp_half_byte(h):
+    return clamp(0, h, 15)
+
 class Triangle(object):
     def __init__(self, bytes):
         self.__bytes = TriangleBytes()
@@ -77,7 +83,7 @@ class Triangle(object):
         d = 1 << random.randrange(4)
         j = random.randrange(4)
         rgba[j] += random.choice([-1, 1]) * random.randrange(d)
-        rgba[j] = clamp(0, rgba[j], 15)
+        rgba[j] = clamp_half_byte(rgba[j])
         bytes[i] = rgba[0] * 16 + rgba[1]
         bytes[i + 1] = rgba[2] * 16 + rgba[3]
         return Triangle(bytes)
@@ -88,5 +94,5 @@ class Triangle(object):
         d = 1 << random.randrange(8)
         for j in xrange(i + 2, i + 4):
             bytes[j] += random.choice([-1, 1]) * random.randrange(d)
-            bytes[j] = clamp(0, bytes[j], 255)
+            bytes[j] = clamp_byte(bytes[j])
         return Triangle(bytes)
