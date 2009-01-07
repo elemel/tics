@@ -6,6 +6,9 @@ default : tics
 clamp.o : clamp.cpp clamp.hpp
 	g++ -c -o clamp.o clamp.cpp
 
+Image.hpp : Triangle.hpp
+	touch Image.hpp
+
 Image.o : Image.cpp Image.hpp
 	g++ -c -o Image.o Image.cpp
 
@@ -17,9 +20,6 @@ Triangle.o : Triangle.cpp Triangle.hpp
 
 Vertex.o : Vertex.cpp Vertex.hpp clamp.hpp random.hpp
 	g++ -c -o Vertex.o Vertex.cpp
-
-Image.hpp : Triangle.hpp
-	touch Image.hpp
 
 tics : $(OBJ)
 	g++ -o tics $(OBJ) $(LDFLAGS)
