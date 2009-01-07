@@ -3,11 +3,11 @@ LDFLAGS=	-lGL -lSDL -lSDL_image
 
 default : tics
 
+tics : $(OBJ)
+	g++ -o tics $(OBJ) $(LDFLAGS)
+
 clamp.o : clamp.cpp clamp.hpp
 	g++ -c -o clamp.o clamp.cpp
-
-Image.hpp : Triangle.hpp
-	touch Image.hpp
 
 Image.o : Image.cpp Image.hpp
 	g++ -c -o Image.o Image.cpp
@@ -21,11 +21,11 @@ Triangle.o : Triangle.cpp Triangle.hpp
 Vertex.o : Vertex.cpp Vertex.hpp clamp.hpp random.hpp
 	g++ -c -o Vertex.o Vertex.cpp
 
-tics : $(OBJ)
-	g++ -o tics $(OBJ) $(LDFLAGS)
-
 tics.o : tics.cpp Image.hpp
 	g++ -c -o tics.o tics.cpp
+
+Image.hpp : Triangle.hpp
+	touch Image.hpp
 
 Triangle.hpp : Vertex.hpp
 	touch Triangle.hpp
