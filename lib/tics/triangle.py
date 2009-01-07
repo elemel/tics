@@ -46,7 +46,7 @@ class Triangle(object):
             self.__bytes[i] = b
 
     def draw(self):
-        tics_dll.triangle(self.__bytes)
+        tics_dll.draw_triangle(self.__bytes)
 
     @classmethod
     def generate(cls):

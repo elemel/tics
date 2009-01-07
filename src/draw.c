@@ -25,7 +25,7 @@
 
 #include <GL/gl.h>
 
-void triangle(unsigned char *bytes)
+void draw_triangle(unsigned char *bytes)
 {
     int i;
     unsigned char r, g, b, a;
