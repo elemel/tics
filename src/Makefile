@@ -1,4 +1,4 @@
-OBJ=	clamp.o Image.o random.o tics.o Triangle.o Vertex.o
+OBJ=	clamp.o Image.o Pixels.o random.o tics.o Triangle.o Vertex.o
 LDFLAGS=	-lGL -lSDL -lSDL_image
 
 default : tics
@@ -11,6 +11,9 @@ clamp.o : clamp.cpp clamp.hpp
 
 Image.o : Image.cpp Image.hpp
 	g++ -c -o Image.o Image.cpp
+
+Pixels.o : Pixels.cpp Pixels.hpp
+	g++ -c -o Pixels.o Pixels.cpp
 
 random.o : random.cpp random.hpp
 	g++ -c -o random.o random.cpp
