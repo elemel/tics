@@ -73,11 +73,11 @@ class Image(object):
             triangles[i] = triangles[i].mutate()
             return Image((self.width, self.height), triangles)
         else:
-            mutate_func = random.choice([self.move_triangle,
-                                         self.replace_triangle])
+            mutate_func = random.choice([self.__move_triangle,
+                                         self.__replace_triangle])
             return mutate_func()
 
-    def move_triangle(self):
+    def __move_triangle(self):
         triangles = list(self.triangles)
         i = random.randrange(len(triangles))
         j = random.randrange(len(triangles))
@@ -85,7 +85,7 @@ class Image(object):
         triangles.insert(j, triangle)
         return Image((self.width, self.height), triangles)
 
-    def replace_triangle(self):
+    def __replace_triangle(self):
         triangles = list(self.triangles)
         i = random.randrange(len(triangles))
         if random.random() < 0.5:
