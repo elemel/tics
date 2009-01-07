@@ -25,14 +25,22 @@
 
 #include <GL/gl.h>
 
-void triangle(double *data)
+void triangle(unsigned char *bytes)
 {
+    int i;
+    unsigned char r, g, b, a;
+    double x, y;
+
     glBegin(GL_TRIANGLES);
-    glColor4d(data[0], data[1], data[2], data[3]);
-    glVertex2d(2.0 * data[4] - 1.0, 2.0 * data[5] - 1.0);
-    glColor4d(data[6], data[7], data[8], data[9]);
-    glVertex2d(2.0 * data[10] - 1.0, 2.0 * data[11] - 1.0);
-    glColor4d(data[12], data[13], data[14], data[15]);
-    glVertex2d(2.0 * data[16] - 1.0, 2.0 * data[17] - 1.0);
+    for (i = 0; i != 12; i += 4) {
+        r = bytes[i] / 16;
+        g = bytes[i] % 16;
+        b = bytes[i + 1] / 16;
+        a = bytes[i + 1] % 16;
+        x = bytes[i + 2] / 255.0;
+        y = bytes[i + 3] / 255.0;
+        glColor4ub(r * 17, g * 17, b * 17, a * 17);
+        glVertex2d(2.0 * x - 1.0, 2.0 * y - 1.0);
+    }
     glEnd();
 }

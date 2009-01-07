@@ -25,80 +25,68 @@ import random, struct, ctypes
 
 draw_dll = ctypes.cdll.LoadLibrary("libtics_draw.so")
 
-ATTR = [c + i for i in "123" for c in "rgbaxy"]
-COLOR_ATTR = [attr for attr in ATTR if attr[0] in "rgba"]
-VERTEX_ATTR = [attr for attr in ATTR if attr[0] in "xy"]
+TriangleBytes = ctypes.c_ubyte * 12
 
-TriangleData = ctypes.c_double * 18
+def clamp(min_value, value, max_value):
+    value = max(min_value, value)
+    value = min(value, max_value)
+    return value
 
 class Triangle(object):
-    def __init__(self, **kwargs):
-        for attr in ATTR:
-            value = kwargs.pop(attr, 0)
-            if attr in COLOR_ATTR:
-                value = max(0, min(15, value))
-            else:
-                value = max(0, min(255, value))
-            setattr(self, attr, value)
-
-        self.data = TriangleData()
-        for i, attr in enumerate(ATTR):
-            value = getattr(self, attr)
-            value /= 15.0 if attr in COLOR_ATTR else 255.0
-            self.data[i] = value
+    def __init__(self, bytes):
+        self.__bytes = TriangleBytes()
+        for i, b in enumerate(bytes):
+            self.__bytes[i] = b
 
     def draw(self):
-        draw_dll.triangle(self.data)
+        draw_dll.triangle(self.__bytes)
 
     @classmethod
     def generate(cls):
-        kwargs = {}
+        bytes = []
         r, g, b = [random.randrange(16) for _ in xrange(3)]
         a = random.randrange(8)
+        rg = r * 16 + b
+        ba = b * 16 + a
         x, y = [random.randrange(256) for _ in xrange(2)]
         d = 1 << random.randrange(8)
-        for i in "123":
-            kwargs["r" + i] = r
-            kwargs["g" + i] = g
-            kwargs["b" + i] = b
-            kwargs["a" + i] = a
-            kwargs["x" + i] = x + random.choice([-1, 1]) * random.randrange(d)
-            kwargs["y" + i] = y + random.choice([-1, 1]) * random.randrange(d)
-        return Triangle(**kwargs)
+        for _ in xrange(3):
+            bytes.append(rg)
+            bytes.append(ba)
+            bytes.append(x + random.choice([-1, 1]) * random.randrange(d))
+            bytes.append(y + random.choice([-1, 1]) * random.randrange(d))
+        return Triangle(bytes)
 
     @classmethod
     def read(cls, f):
-        values = []
-        for _ in xrange(3):
-            rg, ba = struct.unpack("!BB", f.read(2))
-            values.extend(divmod(rg, 16))
-            values.extend(divmod(ba, 16))
-            values.extend(struct.unpack("!BB", f.read(2)))
-        kwargs = dict(zip(ATTR, values))
-        return Triangle(**kwargs)
+        bytes = struct.unpack("!BBBBBBBBBBBB", f.read(12))
+        return Triangle(bytes)
 
     def write(self, f):
-        for i in "123":
-            r, g, b, a = [getattr(self, c + i) for c in "rgba"]
-            f.write(struct.pack("!BB", r * 16 + g, b * 16 + a))
-            x, y = [getattr(self, c + i) for c in "xy"]
-            f.write(struct.pack("!BB", x, y))
+        f.write(struct.pack("!BBBBBBBBBBBB", *self.__bytes))
             
     def mutate(self):
-        mutate_func = random.choice([self.mutate_color, self.mutate_vertex])
+        mutate_func = random.choice([self.__mutate_color,
+                                     self.__mutate_vertex])
         return mutate_func()
     
-    def mutate_color(self):
-        kwargs = dict((attr, getattr(self, attr)) for attr in ATTR)
-        attr = random.choice(COLOR_ATTR)
+    def __mutate_color(self):
+        bytes = list(self.__bytes)
+        i = random.randrange(3) * 4
+        rgba = list(divmod(bytes[i], 16) + divmod(bytes[i + 1], 16))
         d = 1 << random.randrange(4)
-        kwargs[attr] += random.choice([-1, 1]) * random.randrange(d)
-        return Triangle(**kwargs)
-        
-    def mutate_vertex(self):
-        kwargs = dict((attr, getattr(self, attr)) for attr in ATTR)
-        i = random.choice("123")
+        j = random.randrange(4)
+        rgba[j] += random.choice([-1, 1]) * random.randrange(d)
+        rgba[j] = clamp(0, rgba[j], 15)
+        bytes[i] = rgba[0] * 16 + rgba[1]
+        bytes[i + 1] = rgba[2] * 16 + rgba[3]
+        return Triangle(bytes)
+
+    def __mutate_vertex(self):
+        bytes = list(self.__bytes)
+        i = random.randrange(3) * 4
         d = 1 << random.randrange(8)
-        for c in "xy":
-            kwargs[c + i] += random.choice([-1, 1]) * random.randrange(d)
-        return Triangle(**kwargs)
+        for j in xrange(i + 2, i + 4):
+            bytes[j] += random.choice([-1, 1]) * random.randrange(d)
+            bytes[j] = clamp(0, bytes[j], 255)
+        return Triangle(bytes)
