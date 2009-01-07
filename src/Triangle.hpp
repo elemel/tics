@@ -1,3 +1,6 @@
+#ifndef TICS_TRIANGLE_HPP
+#define TICS_TRIANGLE_HPP
+
 #include "Vertex.hpp"
 
 namespace tics {
@@ -12,3 +15,5 @@ namespace tics {
         Vertex v1_, v2_, v3_;
     };
 }
+
+#endif

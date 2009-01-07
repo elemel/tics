@@ -1,3 +1,6 @@
+#ifndef TICS_IMAGE_HPP
+#define TICS_IMAGE_HPP
+
 #include "Triangle.hpp"
 #include <vector>
 
@@ -14,3 +17,5 @@ namespace tics {
         std::vector<Triangle> triangles_;
     };
 }
+
+#endif

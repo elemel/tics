@@ -1,3 +1,6 @@
+#ifndef TICS_VERTEX_HPP
+#define TICS_VERTEX_HPP
+
 #include <vector>
 
 namespace tics {
@@ -13,3 +16,5 @@ namespace tics {
         unsigned char r_, g_, b_, a_, x_, y_;
     };
 }
+
+#endif
