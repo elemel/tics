@@ -52,15 +52,17 @@ class Triangle(object):
         bytes = []
         r, g, b = [random.randrange(16) for _ in xrange(3)]
         a = random.randrange(8)
-        rg = r * 16 + b
+        rg = r * 16 + g
         ba = b * 16 + a
         x, y = [random.randrange(256) for _ in xrange(2)]
         d = 1 << random.randrange(8)
         for _ in xrange(3):
             bytes.append(rg)
             bytes.append(ba)
-            bytes.append(x + random.choice([-1, 1]) * random.randrange(d))
-            bytes.append(y + random.choice([-1, 1]) * random.randrange(d))
+            bytes.append(clamp_byte(x + random.choice([-1, 1]) *
+                                    random.randrange(d)))
+            bytes.append(clamp_byte(y + random.choice([-1, 1]) *
+                                    random.randrange(d)))
         return Triangle(bytes)
 
     @classmethod
