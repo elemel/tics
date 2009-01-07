@@ -25,6 +25,7 @@ import random, struct, ctypes
 
 draw_dll = ctypes.cdll.LoadLibrary("libtics_draw.so")
 
+# r1g1, b1a1, x1, y1, r2g2, b2a2, x2, y2, r3g3, b3a3, x3, y3
 TriangleBytes = ctypes.c_ubyte * 12
 
 def clamp(min_value, value, max_value):
