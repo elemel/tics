@@ -19,14 +19,14 @@ Triangle.o : Triangle.cpp Triangle.hpp
 Vertex.o : Vertex.cpp Vertex.hpp clamp.hpp
 	g++ -c -o Vertex.o Vertex.cpp
 
-install : tics
-	install -m 755 tics /usr/local/bin
-
 Image.hpp : Triangle.hpp
 	touch Image.hpp
 
 Triangle.hpp : Vertex.hpp
 	touch Triangle.hpp
+
+install : tics
+	install -m 755 tics /usr/local/bin
 
 clean:
 	rm -f tics *.o
