@@ -56,8 +56,8 @@ def main():
     update_display(parent)
     bytes_from_display(resolution, bytes)
     parent_fitness = fitness(bytes, source_bytes)
-    iteration = 0
-    log("iteration = %d, fitness = %f" % (iteration, parent_fitness))
+    generation = 0
+    log("generation = %d, fitness = %f" % (generation, parent_fitness))
     while True:
         for event in pygame.event.get():
             if (event.type == QUIT or
@@ -75,8 +75,8 @@ def main():
         if child_fitness < parent_fitness:
             parent = child
             parent_fitness = child_fitness
-            log("iteration = %d, fitness = %f" % (iteration, parent_fitness))
-        iteration += 1
+            log("generation = %d, fitness = %f" % (generation, parent_fitness))
+        generation += 1
  
 if __name__ == '__main__':
     main()
