@@ -2,20 +2,25 @@
 #define TICS_IMAGE_HPP
 
 #include "Triangle.hpp"
+#include <iostream>
 #include <string>
 #include <vector>
+#include <boost/cstdint.hpp>
 
 namespace tics {
     class Image {
     public:
         Image(int width, int height);
 
-        void generate(int triangle_count);
+        void generate(int n);
         void mutate();
         void draw() const;
+
+        void read(std::istream &in);
+        void write(std::ostream &out) const;
     
     private:
-        unsigned short width_, height_;
+        boost::uint16_t width_, height_;
         std::vector<Triangle> triangles_;
     };
 }

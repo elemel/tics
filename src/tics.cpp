@@ -2,6 +2,7 @@
 #include "Pixels.hpp"
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <stdexcept>
 #include <time.h>
 #include <GL/gl.h>
@@ -16,6 +17,9 @@ using std::exception;
 using std::cerr;
 using std::cout;
 using std::endl;
+using std::ifstream;
+using std::ios;
+using std::ofstream;
 using std::runtime_error;
 using tics::Image;
 using tics::Pixels;
@@ -45,6 +49,19 @@ namespace {
         image.draw();
         SDL_GL_SwapBuffers();
     }
+
+    bool poll_quit()
+    {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT || event.type == SDL_KEYDOWN &&
+                event.key.keysym.sym == SDLK_ESCAPE)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 int main(int argc, char **argv)
@@ -57,13 +74,17 @@ int main(int argc, char **argv)
         goal.load(argv[1]);
         init(goal.width(), goal.height());
         Image parent(goal.width(), goal.height());
-        parent.generate(256);
+        ifstream in("image.tics", ios::binary);
+        parent.read(in);
+        if (!in) {
+            parent.generate(256);
+        }
         redraw(parent);
         Pixels current;
         current.copy_display(goal.width(), goal.height());
         double parent_f = current.fitness(goal);
         srand(time(0));
-        for (int g = 0; true; ++g) {
+        for (int g = 0; !poll_quit(); ++g) {
             Image child(parent);
             child.mutate();
             redraw(child);
@@ -76,6 +97,8 @@ int main(int argc, char **argv)
                         parent_f << endl;
             }
         }
+        ofstream out("image.tics", ios::binary);
+        parent.write(out);
         return 0;
     } catch (const exception &e) {
         cerr << "tics: " << e.what() << endl;

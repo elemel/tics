@@ -1,5 +1,8 @@
 #include "Triangle.hpp"
 
+using std::istream;
+using std::ostream;
+
 namespace tics {
     Triangle::Triangle()
     { }
@@ -18,5 +21,19 @@ namespace tics {
         v1_.draw();
         v2_.draw();
         v3_.draw();
+    }
+
+    void Triangle::read(istream &in)
+    {
+        v1_.read(in);
+        v2_.read(in);
+        v3_.read(in);
+    }
+    
+    void Triangle::write(ostream &out) const
+    {
+        v1_.write(out);
+        v2_.write(out);
+        v3_.write(out);
     }
 }

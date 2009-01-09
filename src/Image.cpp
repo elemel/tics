@@ -1,6 +1,9 @@
 #include "Image.hpp"
+#include "io.hpp"
 #include <GL/gl.h>
 
+using std::istream;
+using std::ostream;
 using std::vector;
 
 namespace tics {
@@ -8,11 +11,11 @@ namespace tics {
         : width_(width), height_(height), triangles_()
     { }
     
-    void Image::generate(int triangle_count)
+    void Image::generate(int n)
     {
         typedef vector<Triangle>::iterator Iterator;
 
-        triangles_.resize(triangle_count);
+        triangles_.resize(n);
         for (Iterator i = triangles_.begin(); i != triangles_.end(); ++i) {
             i->generate();
         }
@@ -35,5 +38,31 @@ namespace tics {
             i->draw();
         }
         glEnd();
+    }
+
+    void Image::read(istream &in)
+    {
+        typedef vector<Triangle>::iterator Iterator;
+
+        uint16_t n = 0;
+        tics::read(in, width_);
+        tics::read(in, height_);
+        tics::read(in, n);
+        triangles_.resize(n);
+        for (Iterator i = triangles_.begin(); i != triangles_.end(); ++i) {
+            i->read(in);
+        }
+    }
+    
+    void Image::write(ostream &out) const
+    {
+        typedef vector<Triangle>::const_iterator Iterator;
+
+        tics::write(out, width_);
+        tics::write(out, height_);
+        tics::write(out, uint16_t(triangles_.size()));
+        for (Iterator i = triangles_.begin(); i != triangles_.end(); ++i) {
+            i->write(out);
+        }
     }
 }
