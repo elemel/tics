@@ -23,9 +23,13 @@ namespace tics {
     void Image::mutate()
     {
         if (rand() % 2) {
-            replace_triangle();
+            mutate_triangle();
         } else {
-            move_triangle();
+            if (rand() % 2) {
+                replace_triangle();
+            } else {
+                move_triangle();
+            }
         }
     }
 
@@ -58,6 +62,12 @@ namespace tics {
         BOOST_FOREACH(const Triangle &t, triangles_) {
             t.write(out);
         }
+    }
+
+    void Image::mutate_triangle()
+    {
+        int i = rand() % triangles_.size();
+        triangles_[i].mutate();
     }
 
     void Image::replace_triangle()

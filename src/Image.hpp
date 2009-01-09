@@ -23,6 +23,7 @@ namespace tics {
         boost::uint16_t width_, height_;
         std::vector<Triangle> triangles_;
 
+        void mutate_triangle();
         void replace_triangle();
         void move_triangle();
     };

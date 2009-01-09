@@ -18,6 +18,11 @@ namespace tics {
         }
     }
 
+    void Triangle::mutate()
+    {
+        vertices_[rand() % 3].mutate();
+    }
+
     void Triangle::draw() const
     {
         BOOST_FOREACH(const Vertex &v, vertices_) {

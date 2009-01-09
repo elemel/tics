@@ -32,6 +32,15 @@ namespace tics {
         y_ = clamp_byte(y + random_sign() * (rand() % d));
     }
     
+    void Vertex::mutate()
+    {
+        if (rand() % 2) {
+            mutate_color();
+        } else {
+            mutate_coords();
+        }
+    }
+    
     void Vertex::draw() const
     {
         glColor4d(r_ / 15.0, g_ / 15.0, b_ / 15.0, a_ / 15.0);
@@ -57,5 +66,20 @@ namespace tics {
         tics::write(out, uint8_t(b_ << 4 | a_));
         tics::write(out, x_);
         tics::write(out, y_);
+    }
+
+    void Vertex::mutate_color()
+    {
+        uint8_t *comps[4] = { &r_, &g_, &b_, &a_ };
+        uint8_t *c = comps[rand() % 4];
+        int d = 1 << (rand() % 4);
+        *c = clamp_half_byte(int(*c) + random_sign() * (rand() % d));
+    }
+    
+    void Vertex::mutate_coords()
+    {
+        int d = 1 << (rand() % 8);
+        x_ = clamp_byte(int(x_) + random_sign() * (rand() % d));
+        y_ = clamp_byte(int(y_) + random_sign() * (rand() % d));
     }
 }

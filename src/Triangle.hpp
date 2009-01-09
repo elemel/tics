@@ -11,6 +11,7 @@ namespace tics {
         Triangle();
         
         void generate();
+        void mutate();
         void draw() const;
     
         void read(std::istream &in);
