@@ -23,10 +23,11 @@ namespace tics {
     
     void Image::mutate()
     {
-        int i = rand() % triangles_.size();
-        triangles_.erase(triangles_.begin() + i);
-        triangles_.push_back(Triangle());
-        triangles_.back().generate();
+        if (rand() % 2) {
+            replace_triangle();
+        } else {
+            move_triangle();
+        }
     }
 
     void Image::draw() const
@@ -64,5 +65,24 @@ namespace tics {
         for (Iterator i = triangles_.begin(); i != triangles_.end(); ++i) {
             i->write(out);
         }
+    }
+
+    void Image::replace_triangle()
+    {
+        int i = rand() % triangles_.size();
+        int j = (rand() % 2) ? rand() % triangles_.size() :
+                triangles_.size() - 1;
+        triangles_.erase(triangles_.begin() + i);
+        triangles_.insert(triangles_.begin() + j, Triangle());
+        triangles_[j].generate();
+    }
+
+    void Image::move_triangle()
+    {
+        int i = rand() % triangles_.size();
+        int j = rand() % triangles_.size();
+        Triangle t = triangles_[i];
+        triangles_.erase(triangles_.begin() + i);
+        triangles_.insert(triangles_.begin() + j, t);
     }
 }
