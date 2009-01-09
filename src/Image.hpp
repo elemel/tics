@@ -1,6 +1,7 @@
 #ifndef TICS_IMAGE_HPP
 #define TICS_IMAGE_HPP
 
+#include "Random.hpp"
 #include "Triangle.hpp"
 #include <iostream>
 #include <string>
@@ -12,8 +13,8 @@ namespace tics {
     public:
         Image(int width, int height);
 
-        void generate(int n);
-        void mutate();
+        void generate(int n, Random &random);
+        void mutate(Random &random);
         void draw() const;
 
         void read(std::istream &in);
@@ -23,9 +24,9 @@ namespace tics {
         boost::uint16_t width_, height_;
         std::vector<Triangle> triangles_;
 
-        void mutate_triangle();
-        void replace_triangle();
-        void move_triangle();
+        void mutate_triangle(Random &random);
+        void replace_triangle(Random &random);
+        void move_triangle(Random &random);
     };
 }
 

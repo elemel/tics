@@ -15,23 +15,23 @@ namespace tics {
         : width_(width), height_(height), triangles_()
     { }
     
-    void Image::generate(int n)
+    void Image::generate(int n, Random &random)
     {
         triangles_.resize(n);
         BOOST_FOREACH(Triangle &t, triangles_) {
-            t.generate();
+            t.generate(random);
         }
     }
     
-    void Image::mutate()
+    void Image::mutate(Random &random)
     {
-        if (rand() % 2) {
-            mutate_triangle();
+        if (random.flip()) {
+            mutate_triangle(random);
         } else {
-            if (rand() % 2) {
-                replace_triangle();
+            if (random.flip()) {
+                replace_triangle(random);
             } else {
-                move_triangle();
+                move_triangle(random);
             }
         }
     }
@@ -67,28 +67,28 @@ namespace tics {
         }
     }
 
-    void Image::mutate_triangle()
+    void Image::mutate_triangle(Random &random)
     {
-        int i = rand() % triangles_.size();
-        triangles_[i].mutate();
+        int i = random.range(triangles_.size());
+        triangles_[i].mutate(random);
     }
 
-    void Image::replace_triangle()
+    void Image::replace_triangle(Random &random)
     {
-        int i = rand() % triangles_.size();
-        int j = (rand() % 2) ? rand() % triangles_.size() :
+        int i = random.range(triangles_.size());
+        int j = random.flip() ? random.range(triangles_.size()) :
                 triangles_.size() - 1;
         triangles_.erase(triangles_.begin() + i);
         triangles_.insert(triangles_.begin() + j, Triangle());
-        triangles_[j].generate();
+        triangles_[j].generate(random);
         clog << "replaced triangle #" << i << " with new triangle #" << j
              << endl;
     }
 
-    void Image::move_triangle()
+    void Image::move_triangle(Random &random)
     {
-        int i = rand() % triangles_.size();
-        int j = rand() % triangles_.size();
+        int i = random.range(triangles_.size());
+        int j = random.range(triangles_.size());
         Triangle t = triangles_[i];
         triangles_.erase(triangles_.begin() + i);
         triangles_.insert(triangles_.begin() + j, t);

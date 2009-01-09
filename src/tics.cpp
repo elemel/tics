@@ -1,5 +1,6 @@
 #include "Image.hpp"
 #include "Pixels.hpp"
+#include "Random.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -23,6 +24,7 @@ using std::ofstream;
 using std::runtime_error;
 using tics::Image;
 using tics::Pixels;
+using tics::Random;
 
 namespace {
     void init(int width, int height)
@@ -70,6 +72,7 @@ int main(int argc, char **argv)
         if (argc != 2) {
             throw runtime_error("missing file operand");
         }
+        Random random(time(0));
         Pixels goal;
         goal.load(argv[1]);
         init(goal.width(), goal.height());
@@ -77,16 +80,15 @@ int main(int argc, char **argv)
         ifstream in("image.tics", ios::binary);
         parent.read(in);
         if (!in) {
-            parent.generate(256);
+            parent.generate(256, random);
         }
         redraw(parent);
         Pixels current;
         current.copy_display(goal.width(), goal.height());
         double parent_f = current.fitness(goal);
-        srand(time(0));
         for (int g = 0; !poll_quit(); ++g) {
             Image child(parent);
-            child.mutate();
+            child.mutate(random);
             redraw(child);
             current.copy_display(goal.width(), goal.height());
             double child_f = current.fitness(goal);

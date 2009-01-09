@@ -4,8 +4,8 @@
 #include <boost/cstdint.hpp>
 
 namespace tics {
-    boost::uint8_t clamp_byte(int value);
-    boost::uint8_t clamp_half_byte(int value);
+    boost::uint8_t clamp_uint8(int value);
+    boost::uint8_t clamp_uint4(int value);
 }
 
 #endif

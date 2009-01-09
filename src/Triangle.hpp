@@ -1,6 +1,7 @@
 #ifndef TICS_TRIANGLE_HPP
 #define TICS_TRIANGLE_HPP
 
+#include "Random.hpp"
 #include "Vertex.hpp"
 #include <iostream>
 #include <boost/array.hpp>
@@ -10,8 +11,8 @@ namespace tics {
     public:
         Triangle();
         
-        void generate();
-        void mutate();
+        void generate(Random &random);
+        void mutate(Random &random);
         void draw() const;
     
         void read(std::istream &in);

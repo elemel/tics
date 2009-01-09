@@ -9,18 +9,20 @@ namespace tics {
     Triangle::Triangle()
     { }
 
-    void Triangle::generate()
+    void Triangle::generate(Random &random)
     {
-        int r = rand() % 16, g = rand() % 16, b = rand() % 16, a = rand() % 8;
-        int x = rand() % 256, y = rand() % 256;
+        int red = random.range(16), green = random.range(16),
+            blue = random.range(16), alpha = random.range(8);
+        int x = random.range(256), y = random.range(256);
         BOOST_FOREACH(Vertex &v, vertices_) {
-            v.generate(r, g, b, a, x, y);
+            v.generate(red, green, blue, alpha, x, y, random);
         }
     }
 
-    void Triangle::mutate()
+    void Triangle::mutate(Random &random)
     {
-        vertices_[rand() % 3].mutate();
+        int i = random.range(3);
+        vertices_[i].mutate(random);
     }
 
     void Triangle::draw() const

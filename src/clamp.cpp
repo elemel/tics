@@ -3,7 +3,7 @@
 using boost::uint8_t;
 
 namespace tics {
-    uint8_t clamp_byte(int value)
+    uint8_t clamp_uint8(int value)
     {
         if (value < 0) {
             value = 0;
@@ -13,7 +13,7 @@ namespace tics {
         return uint8_t(value);
     }
 
-    uint8_t clamp_half_byte(int value)
+    uint8_t clamp_uint4(int value)
     {
         if (value < 0) {
             value = 0;

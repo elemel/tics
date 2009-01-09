@@ -1,5 +1,5 @@
 LD=			$(CXX)
-OBJS=		clamp.o Image.o io.o Pixels.o random.o tics.o Triangle.o Vertex.o
+OBJS=		clamp.o Image.o io.o Pixels.o Random.o tics.o Triangle.o Vertex.o
 CXXFLAGS=	-Wall -g
 LDFLAGS=	-lGL -lSDL -lSDL_image
 
@@ -10,19 +10,19 @@ tics : $(OBJS)
 
 clamp.o : clamp.cpp clamp.hpp
 
-Image.o : Image.cpp Image.hpp io.hpp
+Image.o : Image.cpp Image.hpp io.hpp Random.hpp
 
 io.o : io.cpp io.hpp
 
 Pixels.o : Pixels.cpp Pixels.hpp
 
-random.o : random.cpp random.hpp
+Random.o : Random.cpp Random.hpp
 
-tics.o : tics.cpp Image.hpp
+tics.o : tics.cpp Image.hpp Pixels.hpp Random.hpp
 
-Triangle.o : Triangle.cpp Triangle.hpp
+Triangle.o : Triangle.cpp Triangle.hpp Random.hpp
 
-Vertex.o : Vertex.cpp Vertex.hpp clamp.hpp io.hpp random.hpp
+Vertex.o : Vertex.cpp Vertex.hpp clamp.hpp io.hpp Random.hpp
 
 Image.hpp : Triangle.hpp
 	touch Image.hpp

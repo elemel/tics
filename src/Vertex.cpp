@@ -1,7 +1,6 @@
 #include "Vertex.hpp"
 #include "clamp.hpp"
 #include "io.hpp"
-#include "random.hpp"
 #include <GL/gl.h>
 
 using std::clog;
@@ -18,36 +17,37 @@ namespace tics {
     { }
     
     Vertex::Vertex(int r, int g, int b, int a, int x, int y)
-        : r_(clamp_half_byte(r)),
-          g_(clamp_half_byte(g)),
-          b_(clamp_half_byte(b)),
-          a_(clamp_half_byte(a)),
-          x_(clamp_byte(x)),
-          y_(clamp_byte(y))
+        : r_(clamp_uint4(r)),
+          g_(clamp_uint4(g)),
+          b_(clamp_uint4(b)),
+          a_(clamp_uint4(a)),
+          x_(clamp_uint8(x)),
+          y_(clamp_uint8(y))
     { }
     
-    void Vertex::generate(int r, int g, int b, int a, int x, int y)
+    void Vertex::generate(int r, int g, int b, int a, int x, int y,
+                          Random &random)
     {
-        r_ = clamp_half_byte(r);
-        g_ = clamp_half_byte(g);
-        b_ = clamp_half_byte(b);
-        a_ = clamp_half_byte(a);
-        int d = 1 << (rand() % 8);
-        x_ = clamp_byte(x + random_sign() * (rand() % d));
-        y_ = clamp_byte(y + random_sign() * (rand() % d));
+        r_ = clamp_uint4(r);
+        g_ = clamp_uint4(g);
+        b_ = clamp_uint4(b);
+        a_ = clamp_uint4(a);
+        int d = 1 << random.range(1, 8);
+        x_ = clamp_uint8(x + random.offset(1, d));
+        y_ = clamp_uint8(y + random.offset(1, d));
     }
     
-    void Vertex::mutate()
+    void Vertex::mutate(Random &random)
     {
-        if (rand() % 2) {
+        if (random.flip()) {
             int r = r_, g = g_, b = b_, a = a_;
-            mutate_color();
+            mutate_color(random);
             clog << hex << uppercase << "mutated color from "
                  << r << g << b << a << " to "
                  << int(r_) << int(g_) << int(b_) << int(a_) << dec << endl; 
         } else {
             int x = x_, y = y_;
-            mutate_coords();
+            mutate_coords(random);
             clog << "mutated coordinates from (" << x << ", " << y << ") to ("
                  << int(x_) << ", " << int(y_) << ")" << endl;
         }
@@ -80,19 +80,18 @@ namespace tics {
         tics::write(out, y_);
     }
 
-    void Vertex::mutate_color()
+    void Vertex::mutate_color(Random &random)
     {
         uint8_t *comps[4] = { &r_, &g_, &b_, &a_ };
-        int i = rand() % 4;
-        int d = 1 << (rand() % 4);
-        *comps[i] = clamp_half_byte(int(*comps[i]) +
-                                   random_sign() * (rand() % d));
+        int i = random.range(4);
+        int d = 1 << random.range(1, 4);
+        *comps[i] = clamp_uint4(int(*comps[i]) + random.offset(1, d));
     }
     
-    void Vertex::mutate_coords()
+    void Vertex::mutate_coords(Random &random)
     {
-        int d = 1 << (rand() % 8);
-        x_ = clamp_byte(int(x_) + random_sign() * (rand() % d));
-        y_ = clamp_byte(int(y_) + random_sign() * (rand() % d));
+        int d = 1 << random.range(1, 8);
+        x_ = clamp_uint8(int(x_) + random.offset(1, d));
+        y_ = clamp_uint8(int(y_) + random.offset(1, d));
     }
 }
