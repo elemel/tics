@@ -2,6 +2,7 @@
 #define TICS_IMAGE_HPP
 
 #include "Triangle.hpp"
+#include <string>
 #include <vector>
 
 namespace tics {
@@ -10,6 +11,7 @@ namespace tics {
         Image(int width, int height);
 
         void generate(int triangle_count);
+        void mutate();
         void draw() const;
     
     private:

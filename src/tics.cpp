@@ -65,7 +65,7 @@ int main(int argc, char **argv)
         srand(time(0));
         for (int g = 0; true; ++g) {
             Image child(parent);
-            child.generate(256);
+            child.mutate();
             redraw(child);
             current.copy_display(goal.width(), goal.height());
             double child_f = current.fitness(goal);

@@ -17,6 +17,14 @@ namespace tics {
             i->generate();
         }
     }
+    
+    void Image::mutate()
+    {
+        int i = rand() % triangles_.size();
+        triangles_.erase(triangles_.begin() + i);
+        triangles_.push_back(Triangle());
+        triangles_.back().generate();
+    }
 
     void Image::draw() const
     {

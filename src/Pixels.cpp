@@ -7,6 +7,7 @@
 
 using boost::shared_ptr;
 using std::clog;
+using std::copy;
 using std::endl;
 using std::logic_error;
 using std::runtime_error;
@@ -52,6 +53,10 @@ namespace tics {
         }
         original = convert(*original);
         resize(original->w, original->h, 4);
+        unsigned char *first =
+            reinterpret_cast<unsigned char *>(original->pixels);
+        unsigned char *last = first + width_ * height_ * depth_;
+        copy(first, last, data_.get());
     }
     
     void Pixels::copy_display(int width, int height)
