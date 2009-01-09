@@ -1,8 +1,9 @@
 #ifndef TICS_PIXELS_HPP
 #define TICS_PIXELS_HPP
 
-#include <boost/shared_array.hpp>
 #include <string>
+#include <boost/cstdint.hpp>
+#include <boost/shared_array.hpp>
 
 namespace tics {
     class Pixels {
@@ -19,7 +20,7 @@ namespace tics {
         int depth() const;
     
     private:
-        boost::shared_array<unsigned char> data_;
+        boost::shared_array<boost::uint8_t> data_;
         int width_, height_, depth_;
         
         void resize(int width, int height, int depth);

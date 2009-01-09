@@ -58,9 +58,14 @@ namespace tics {
         original = convert(*original);
         resize(original->w, original->h, 4);
         SDL_LockSurface(original.get());
-        uint8_t *first = reinterpret_cast<uint8_t *>(original->pixels);
-        uint8_t *last = first + width_ * height_ * depth_;
-        copy(first, last, data_.get());
+        for (int y = 0; y < original->h; ++y) {
+            uint8_t *first = reinterpret_cast<uint8_t *>(original->pixels) +
+                             y * original->pitch;
+            uint8_t *last = first + original->pitch;
+            uint8_t *dest = data_.get() + (original->h - y - 1) *
+                            original->pitch;
+            copy(first, last, dest);
+        }
         SDL_UnlockSurface(original.get());
     }
     
