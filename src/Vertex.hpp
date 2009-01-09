@@ -10,9 +10,9 @@ namespace tics {
     class Vertex {
     public:
         Vertex();
-        Vertex(int r, int g, int b, int a, int x, int y);
+        Vertex(int red, int green, int blue, int alpha, int x, int y);
     
-        void generate(int r, int g, int b, int a, int x, int y,
+        void generate(int red, int green, int blue, int alpha, int x, int y,
                       Random &random);
         void mutate(Random &random);
         void draw() const;
@@ -21,7 +21,7 @@ namespace tics {
         void write(std::ostream &out) const;
 
     private:
-        boost::uint8_t r_, g_, b_, a_, x_, y_;
+        boost::uint8_t red_, green_, blue_, alpha_, x_, y_;
 
         void mutate_color(Random &random);
         void mutate_coords(Random &random);

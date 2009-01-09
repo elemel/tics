@@ -13,25 +13,25 @@ using std::uppercase;
 
 namespace tics {
     Vertex::Vertex()
-        : r_(0), g_(0), b_(0), a_(0), x_(0), y_(0)
+        : red_(0), green_(0), blue_(0), alpha_(0), x_(0), y_(0)
     { }
     
-    Vertex::Vertex(int r, int g, int b, int a, int x, int y)
-        : r_(clamp_uint4(r)),
-          g_(clamp_uint4(g)),
-          b_(clamp_uint4(b)),
-          a_(clamp_uint4(a)),
+    Vertex::Vertex(int red, int green, int blue, int alpha, int x, int y)
+        : red_(clamp_uint4(red)),
+          green_(clamp_uint4(green)),
+          blue_(clamp_uint4(blue)),
+          alpha_(clamp_uint4(alpha)),
           x_(clamp_uint8(x)),
           y_(clamp_uint8(y))
     { }
     
-    void Vertex::generate(int r, int g, int b, int a, int x, int y,
-                          Random &random)
+    void Vertex::generate(int red, int green, int blue, int alpha,
+                          int x, int y, Random &random)
     {
-        r_ = clamp_uint4(r);
-        g_ = clamp_uint4(g);
-        b_ = clamp_uint4(b);
-        a_ = clamp_uint4(a);
+        red_ = clamp_uint4(red);
+        green_ = clamp_uint4(green);
+        blue_ = clamp_uint4(blue);
+        alpha_ = clamp_uint4(alpha);
         int d = 1 << random.range(1, 8);
         x_ = clamp_uint8(x + random.offset(1, d));
         y_ = clamp_uint8(y + random.offset(1, d));
@@ -40,11 +40,12 @@ namespace tics {
     void Vertex::mutate(Random &random)
     {
         if (random.flip()) {
-            int r = r_, g = g_, b = b_, a = a_;
+            int red = red_, green = green_, blue = blue_, alpha = alpha_;
             mutate_color(random);
             clog << hex << uppercase << "mutated color from "
-                 << r << g << b << a << " to "
-                 << int(r_) << int(g_) << int(b_) << int(a_) << dec << endl; 
+                 << red << green << blue << alpha << " to "
+                 << int(red_) << int(green_) << int(blue_) << int(alpha_)
+                 << dec << endl; 
         } else {
             int x = x_, y = y_;
             mutate_coords(random);
@@ -55,34 +56,34 @@ namespace tics {
     
     void Vertex::draw() const
     {
-        glColor4d(r_ / 15.0, g_ / 15.0, b_ / 15.0, a_ / 15.0);
+        glColor4d(red_ / 15.0, green_ / 15.0, blue_ / 15.0, alpha_ / 15.0);
         glVertex2d(x_ / 255.0 * 2.0 - 1.0, y_ / 255.0 * 2.0 - 1.0);
     }
 
     void Vertex::read(istream &in)
     {
-        uint8_t rg = 0, ba = 0;
-        tics::read(in, rg);
-        tics::read(in, ba);
+        uint8_t red_green = 0, blue_alpha = 0;
+        tics::read(in, red_green);
+        tics::read(in, blue_alpha);
         tics::read(in, x_);
         tics::read(in, y_);
-        r_ = rg >> 4;
-        g_ = rg & 0xf;
-        b_ = ba >> 4;
-        a_ = ba & 0xf;
+        red_ = red_green >> 4;
+        green_ = red_green & 0xf;
+        blue_ = blue_alpha >> 4;
+        alpha_ = blue_alpha & 0xf;
     }
     
     void Vertex::write(ostream &out) const
     {
-        tics::write(out, uint8_t(r_ << 4 | g_));
-        tics::write(out, uint8_t(b_ << 4 | a_));
+        tics::write(out, uint8_t(red_ << 4 | green_));
+        tics::write(out, uint8_t(blue_ << 4 | alpha_));
         tics::write(out, x_);
         tics::write(out, y_);
     }
 
     void Vertex::mutate_color(Random &random)
     {
-        uint8_t *comps[4] = { &r_, &g_, &b_, &a_ };
+        uint8_t *comps[4] = { &red_, &green_, &blue_, &alpha_ };
         int i = random.range(4);
         int d = 1 << random.range(1, 4);
         *comps[i] = clamp_uint4(int(*comps[i]) + random.offset(1, d));
