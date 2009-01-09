@@ -1,10 +1,12 @@
 #include "Pixels.hpp"
-#include <GL/gl.h>
-#include <SDL/SDL_image.h>
-#include <boost/shared_ptr.hpp>
 #include <iostream>
 #include <stdexcept>
+#include <boost/cstdint.hpp>
+#include <boost/shared_ptr.hpp>
+#include <SDL/SDL_image.h>
+#include <GL/gl.h>
 
+using boost::uint8_t;
 using boost::shared_ptr;
 using std::clog;
 using std::copy;
@@ -16,19 +18,21 @@ namespace tics {
     namespace {
         shared_ptr<SDL_Surface> convert(SDL_Surface &src)
         {
+            enum { big_endian = (SDL_BYTEORDER == SDL_BIG_ENDIAN) };
+            
             SDL_PixelFormat fmt;
             fmt.palette = 0;
             fmt.BitsPerPixel = 32;
             fmt.BytesPerPixel = 4;
-            fmt.Rmask = 0xff000000;
-            fmt.Gmask = 0x00ff0000;
-            fmt.Bmask = 0x0000ff00;
-            fmt.Amask = 0x000000ff;
-            fmt.Rloss =  fmt.Gloss = fmt.Bloss = fmt.Aloss = 0;
-            fmt.Rshift = 24;
-            fmt.Gshift = 16;
-            fmt.Bshift = 8;
-            fmt.Ashift = 0;
+            fmt.Rmask = big_endian ? 0xff000000 : 0x000000ff;
+            fmt.Gmask = big_endian ? 0x00ff0000 : 0x0000ff00;
+            fmt.Bmask = big_endian ? 0x0000ff00 : 0x00ff0000;
+            fmt.Amask = big_endian ? 0x000000ff : 0xff000000;
+            fmt.Rloss = fmt.Gloss = fmt.Bloss = fmt.Aloss = 0;
+            fmt.Rshift = big_endian ? 24 : 0;
+            fmt.Gshift = big_endian ? 16 : 8;
+            fmt.Bshift = big_endian ? 8 : 16;
+            fmt.Ashift = big_endian ? 0 : 24;
             fmt.colorkey = 0;
             fmt.alpha = 255;
             shared_ptr<SDL_Surface> result(SDL_ConvertSurface(&src, &fmt, 0),
@@ -53,10 +57,11 @@ namespace tics {
         }
         original = convert(*original);
         resize(original->w, original->h, 4);
-        unsigned char *first =
-            reinterpret_cast<unsigned char *>(original->pixels);
-        unsigned char *last = first + width_ * height_ * depth_;
+        SDL_LockSurface(original.get());
+        uint8_t *first = reinterpret_cast<uint8_t *>(original->pixels);
+        uint8_t *last = first + width_ * height_ * depth_;
         copy(first, last, data_.get());
+        SDL_UnlockSurface(original.get());
     }
     
     void Pixels::copy_display(int width, int height)
