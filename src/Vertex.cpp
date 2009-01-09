@@ -4,6 +4,10 @@
 #include "random.hpp"
 #include <GL/gl.h>
 
+using std::clog;
+using std::dec;
+using std::endl;
+using std::hex;
 using std::istream;
 using std::ostream;
 
@@ -35,9 +39,16 @@ namespace tics {
     void Vertex::mutate()
     {
         if (rand() % 2) {
+            int r = r_, g = g_, b = b_, a = a_;
             mutate_color();
+            clog << hex << "mutated color from #" << r << g << b << a
+                 << " to #" << int(r_) << int(g_) << int(b_) << int(a_) << dec
+                 << endl; 
         } else {
+            int x = x_, y = y_;
             mutate_coords();
+            clog << "mutated coordinates from (" << x << ", " << y << ") to ("
+                 << int(x_) << ", " << int(y_) << ")" << endl;
         }
     }
     
@@ -71,9 +82,10 @@ namespace tics {
     void Vertex::mutate_color()
     {
         uint8_t *comps[4] = { &r_, &g_, &b_, &a_ };
-        uint8_t *c = comps[rand() % 4];
+        int i = rand() % 4;
         int d = 1 << (rand() % 4);
-        *c = clamp_half_byte(int(*c) + random_sign() * (rand() % d));
+        *comps[i] = clamp_half_byte(int(*comps[i]) +
+                                   random_sign() * (rand() % d));
     }
     
     void Vertex::mutate_coords()
