@@ -37,7 +37,7 @@ namespace {
             throw runtime_error(SDL_GetError());
         }
         
-        glClearColor(0.0, 0.0, 0.0, 0.0);
+        glClearColor(0.0, 0.0, 0.0, 1.0);
         glShadeModel(GL_SMOOTH);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
