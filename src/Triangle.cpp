@@ -1,5 +1,6 @@
 #include "Triangle.hpp"
 
+using boost::array;
 using std::istream;
 using std::ostream;
 
@@ -9,31 +10,39 @@ namespace tics {
 
     void Triangle::generate()
     {
+        typedef array<Vertex, 3>::iterator Iterator;
+        
         int r = rand() % 16, g = rand() % 16, b = rand() % 16, a = rand() % 8;
         int x = rand() % 256, y = rand() % 256;
-        v1_.generate(r, g, b, a, x, y);
-        v2_.generate(r, g, b, a, x, y);
-        v3_.generate(r, g, b, a, x, y);
+        for (Iterator i = vertices_.begin(); i != vertices_.end(); ++i) {
+            i->generate(r, g, b, a, x, y);
+        }
     }
 
     void Triangle::draw() const
     {
-        v1_.draw();
-        v2_.draw();
-        v3_.draw();
+        typedef array<Vertex, 3>::const_iterator Iterator;
+
+        for (Iterator i = vertices_.begin(); i != vertices_.end(); ++i) {
+            i->draw();
+        }
     }
 
     void Triangle::read(istream &in)
     {
-        v1_.read(in);
-        v2_.read(in);
-        v3_.read(in);
+        typedef array<Vertex, 3>::iterator Iterator;
+
+        for (Iterator i = vertices_.begin(); i != vertices_.end(); ++i) {
+            i->read(in);
+        }
     }
     
     void Triangle::write(ostream &out) const
     {
-        v1_.write(out);
-        v2_.write(out);
-        v3_.write(out);
+        typedef array<Vertex, 3>::const_iterator Iterator;
+
+        for (Iterator i = vertices_.begin(); i != vertices_.end(); ++i) {
+            i->write(out);
+        }
     }
 }

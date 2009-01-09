@@ -3,6 +3,7 @@
 
 #include "Vertex.hpp"
 #include <iostream>
+#include <boost/array.hpp>
 
 namespace tics {
     class Triangle {
@@ -16,7 +17,7 @@ namespace tics {
         void write(std::ostream &out) const;
 
     private:
-        Vertex v1_, v2_, v3_;
+        boost::array<Vertex, 3> vertices_;
     };
 }
 
