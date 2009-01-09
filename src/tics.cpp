@@ -93,8 +93,8 @@ int main(int argc, char **argv)
             if (child_f < parent_f) {
                 parent = child;
                 parent_f = child_f;
-                cout << "improved fitness to " << parent_f <<
-                        " in generation " << g << endl;
+                cout << "improved fitness to " << parent_f
+                     << " in generation #" << g << endl;
             }
         }
         ofstream out("image.tics", ios::binary);

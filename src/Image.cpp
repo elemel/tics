@@ -81,8 +81,8 @@ namespace tics {
         triangles_.erase(triangles_.begin() + i);
         triangles_.insert(triangles_.begin() + j, Triangle());
         triangles_[j].generate();
-        clog << "replaced triangle " << i << " with new triangle " << j <<
-                endl;
+        clog << "replaced triangle #" << i << " with new triangle #" << j
+             << endl;
     }
 
     void Image::move_triangle()
@@ -92,6 +92,6 @@ namespace tics {
         Triangle t = triangles_[i];
         triangles_.erase(triangles_.begin() + i);
         triangles_.insert(triangles_.begin() + j, t);
-        clog << "moved triangle " << i << " to " << j << endl;
+        clog << "moved triangle #" << i << " to #" << j << endl;
     }
 }

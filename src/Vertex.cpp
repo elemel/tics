@@ -10,6 +10,7 @@ using std::endl;
 using std::hex;
 using std::istream;
 using std::ostream;
+using std::uppercase;
 
 namespace tics {
     Vertex::Vertex()
@@ -41,9 +42,9 @@ namespace tics {
         if (rand() % 2) {
             int r = r_, g = g_, b = b_, a = a_;
             mutate_color();
-            clog << hex << "mutated color from #" << r << g << b << a
-                 << " to #" << int(r_) << int(g_) << int(b_) << int(a_) << dec
-                 << endl; 
+            clog << hex << uppercase << "mutated color from "
+                 << r << g << b << a << " to "
+                 << int(r_) << int(g_) << int(b_) << int(a_) << dec << endl; 
         } else {
             int x = x_, y = y_;
             mutate_coords();
