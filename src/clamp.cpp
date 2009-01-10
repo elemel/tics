@@ -1,25 +1,14 @@
 #include "clamp.hpp"
 
-using boost::uint8_t;
-
 namespace tics {
-    uint8_t clamp_uint8(int value)
+    int clamp(int value, int max_value)
     {
         if (value < 0) {
-            value = 0;
-        } else if (value > 255) {
-            value = 255;
+            return 0;
+        } else if (value > max_value) {
+            return max_value;
+        } else {
+            return value;
         }
-        return uint8_t(value);
-    }
-
-    uint8_t clamp_uint4(int value)
-    {
-        if (value < 0) {
-            value = 0;
-        } else if (value > 15) {
-            value = 15;
-        }
-        return uint8_t(value);
     }
 }

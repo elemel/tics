@@ -17,24 +17,24 @@ namespace tics {
     { }
     
     Vertex::Vertex(int red, int green, int blue, int alpha, int x, int y)
-        : red_(clamp_uint4(red)),
-          green_(clamp_uint4(green)),
-          blue_(clamp_uint4(blue)),
-          alpha_(clamp_uint4(alpha)),
-          x_(clamp_uint8(x)),
-          y_(clamp_uint8(y))
+        : red_(clamp(red, 15)),
+          green_(clamp(green, 15)),
+          blue_(clamp(blue, 15)),
+          alpha_(clamp(alpha, 15)),
+          x_(clamp(x, 255)),
+          y_(clamp(y, 255))
     { }
     
     void Vertex::generate(int red, int green, int blue, int alpha,
                           int x, int y, Random &random)
     {
-        red_ = clamp_uint4(red);
-        green_ = clamp_uint4(green);
-        blue_ = clamp_uint4(blue);
-        alpha_ = clamp_uint4(alpha);
+        red_ = clamp(red, 15);
+        green_ = clamp(green, 15);
+        blue_ = clamp(blue, 15);
+        alpha_ = clamp(alpha, 15);
         int d = 1 << random.range(1, 8);
-        x_ = clamp_uint8(x + random.offset(1, d));
-        y_ = clamp_uint8(y + random.offset(1, d));
+        x_ = clamp(x + random.offset(1, d), 255);
+        y_ = clamp(y + random.offset(1, d), 255);
     }
     
     void Vertex::mutate(Random &random)
@@ -86,13 +86,13 @@ namespace tics {
         uint8_t *comps[4] = { &red_, &green_, &blue_, &alpha_ };
         int i = random.range(4);
         int d = 1 << random.range(1, 4);
-        *comps[i] = clamp_uint4(int(*comps[i]) + random.offset(1, d));
+        *comps[i] = clamp(int(*comps[i]) + random.offset(1, d), 15);
     }
     
     void Vertex::mutate_coords(Random &random)
     {
         int d = 1 << random.range(1, 8);
-        x_ = clamp_uint8(int(x_) + random.offset(1, d));
-        y_ = clamp_uint8(int(y_) + random.offset(1, d));
+        x_ = clamp(int(x_) + random.offset(1, d), 255);
+        y_ = clamp(int(y_) + random.offset(1, d), 255);
     }
 }
