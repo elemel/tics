@@ -56,7 +56,7 @@ namespace tics {
     
     void Vertex::draw() const
     {
-        glColor4d(red_ / 15.0, green_ / 15.0, blue_ / 15.0, alpha_ / 15.0);
+        glColor4d(red_ / 15.0, green_ / 15.0, blue_ / 15.0, alpha_ / 30.0);
         glVertex2d(x_ / 255.0 * 2.0 - 1.0, y_ / 255.0 * 2.0 - 1.0);
     }
 

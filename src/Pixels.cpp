@@ -72,6 +72,7 @@ namespace tics {
     void Pixels::copy_display(int width, int height)
     {
         resize(width, height, 4);
+        glFinish();
         glPixelStorei(GL_PACK_ALIGNMENT, 0);
         glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE,
                      data_.get());
