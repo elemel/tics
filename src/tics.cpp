@@ -76,6 +76,7 @@ int main(int argc, char **argv)
         }
         Random random(time(0));
         Surface goal(argv[1], 4);
+        goal.flip_y();
         init(goal.width(), goal.height());
         Image parent(goal.width(), goal.height());
         ifstream in("image.tics", ios::binary);
