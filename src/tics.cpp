@@ -1,5 +1,4 @@
 #include "Image.hpp"
-#include "Pixels.hpp"
 #include "Random.hpp"
 #include "Surface.hpp"
 #include <cstdlib>
@@ -24,7 +23,6 @@ using std::ios;
 using std::ofstream;
 using std::runtime_error;
 using tics::Image;
-using tics::Pixels;
 using tics::Random;
 using tics::Surface;
 
