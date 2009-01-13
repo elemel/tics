@@ -41,7 +41,7 @@ class Vertex(object):
     def draw(self):
         glColor4d(self.__r / 15.0, self.__g / 15.0, self.__b / 15.0,
                   self.__a / 15.0)
-        glVertex2d(self.__x / 127.5 - 1.0, self.__y / 127.5 - 1.0)
+        glVertex2d(2.0 * self.__x / 255.0 - 1.0, 2.0 * self.__y / 255.0 - 1.0)
         
     @staticmethod
     def generate(r, g, b, a, x, y, d):
