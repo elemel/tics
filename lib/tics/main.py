@@ -47,6 +47,7 @@ def main():
     pygame.init()
     try:
         source_surface = pygame.image.load(source_path).convert(32)
+        source_surface = pygame.transform.flip(source_surface, False, True)
     except:
         log("could not load source file: %s" % source_path)
         sys.exit(1)

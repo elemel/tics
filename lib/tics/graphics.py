@@ -47,7 +47,7 @@ def bytes_from_surface(surface):
     i = 0
     for y in xrange(height):
         for x in xrange(width):
-            color = surface.get_at((x, height - y - 1))
+            color = surface.get_at((x, y))
             for c in color[:3]:
                 bytes[i] = c
                 i += 1
