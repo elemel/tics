@@ -53,7 +53,7 @@ def main():
         sys.exit(1)
     resolution = source_surface.get_size()
     source_bytes = bytes_from_surface(source_surface)
-    pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
+    pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF | SWSURFACE)
     pygame.display.set_caption("tics: %s" % os.path.basename(source_path))
     init_opengl()
     try:
