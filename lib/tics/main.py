@@ -30,6 +30,13 @@ from tics.c_fitness import fitness
 def log(message):
     sys.stderr.write("tics: %s\n" % message)
 
+def poll_quit():
+    for event in pygame.event.get():
+        if (event.type == QUIT or
+            (event.type == KEYDOWN and event.key == K_ESCAPE)):
+            return True
+    return False
+
 def main():
     args = sys.argv[1:]
     if len(args) != 1:
@@ -48,6 +55,7 @@ def main():
     pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
     pygame.display.set_caption("tics: %s" % os.path.basename(source_path))
     init_opengl()
+    parent = Image.load(target_path)
     try:
         parent = Image.load(target_path)
     except:
@@ -58,16 +66,7 @@ def main():
     parent_fitness = fitness(bytes, source_bytes)
     generation = 0
     log("generation = %d, fitness = %f" % (generation, parent_fitness))
-    while True:
-        for event in pygame.event.get():
-            if (event.type == QUIT or
-                (event.type == KEYDOWN and event.key == K_ESCAPE)):
-                try:
-                    parent.save(target_path)
-                except:
-                    log("could not save target file: %s" % target_path)
-                    sys.exit(1)
-                sys.exit(0)
+    while not poll_quit():
         child = parent.mutate()
         update_display(child)
         bytes_from_display(resolution, bytes)
@@ -77,6 +76,12 @@ def main():
             parent_fitness = child_fitness
             log("generation = %d, fitness = %f" % (generation, parent_fitness))
         generation += 1
+    parent.save(target_path)
+    try:
+        parent.save(target_path)
+    except:
+        log("could not save target file: %s" % target_path)
+        sys.exit(1)
  
 if __name__ == '__main__':
     main()

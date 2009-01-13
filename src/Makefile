@@ -1,8 +1,5 @@
-libtics.so : draw.o fitness.o
-	ld -shared -o libtics.so draw.o fitness.o
-
-draw.o : draw.c
-	cc -c -o draw.o draw.c
+libtics.so : fitness.o
+	ld -shared -o libtics.so fitness.o
 
 fitness.o : fitness.c
 	cc -c -o fitness.o fitness.c

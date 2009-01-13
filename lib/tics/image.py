@@ -22,31 +22,34 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 
 import random, struct
-from tics.triangle import *
+from OpenGL.GL import *
+from tics.triangle import Triangle
 
 class Image(object):
     def __init__(self, (width, height), triangles):
         self.width = width
         self.height = height
-        self.triangles = triangles
+        self.triangles = tuple(triangles)
 
     def draw(self):
+        glBegin(GL_TRIANGLES)
         for triangle in self.triangles:
             triangle.draw()
+        glEnd()
 
-    @classmethod
-    def generate(cls, resolution,  triangle_count):
+    @staticmethod
+    def generate(resolution,  triangle_count):
         triangles = [Triangle.generate() for _ in xrange(triangle_count)]
         return Image(resolution, triangles)
 
-    @classmethod
-    def read(cls, f):
+    @staticmethod
+    def read(f):
         width, height, triangle_count = struct.unpack("!HHH", f.read(6))
         triangles = [Triangle.read(f) for _ in xrange(triangle_count)]
         return Image((width, height), triangles)
 
-    @classmethod        
-    def load(cls, path):
+    @staticmethod
+    def load(path):
         f = open(path, "rb")
         try:
             return Image.read(f)

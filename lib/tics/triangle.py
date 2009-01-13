@@ -21,81 +21,36 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-import random, struct, ctypes
-
-tics_dll = ctypes.cdll.LoadLibrary("libtics.so")
-
-# r1g1, b1a1, x1, y1, r2g2, b2a2, x2, y2, r3g3, b3a3, x3, y3
-TriangleBytes = ctypes.c_ubyte * 12
-
-def clamp(min_value, value, max_value):
-    value = max(min_value, value)
-    value = min(value, max_value)
-    return value
-
-def clamp_byte(b):
-    return clamp(0, b, 255)
-
-def clamp_half_byte(h):
-    return clamp(0, h, 15)
+import random
+from tics.vertex import Vertex
 
 class Triangle(object):
-    def __init__(self, bytes):
-        self.__bytes = TriangleBytes()
-        for i, b in enumerate(bytes):
-            self.__bytes[i] = b
+    def __init__(self, vertices):
+        self.__vertices = tuple(vertices)
 
     def draw(self):
-        tics_dll.draw_triangle(self.__bytes)
+        for vertex in self.__vertices:
+            vertex.draw()
 
-    @classmethod
-    def generate(cls):
-        bytes = []
+    @staticmethod
+    def generate():
         r, g, b = [random.randrange(16) for _ in xrange(3)]
         a = random.randrange(8)
-        rg = r * 16 + g
-        ba = b * 16 + a
         x, y = [random.randrange(256) for _ in xrange(2)]
         d = 1 << random.randrange(8)
-        for _ in xrange(3):
-            bytes.append(rg)
-            bytes.append(ba)
-            bytes.append(clamp_byte(x + random.choice([-1, 1]) *
-                                    random.randrange(d)))
-            bytes.append(clamp_byte(y + random.choice([-1, 1]) *
-                                    random.randrange(d)))
-        return Triangle(bytes)
+        return Triangle(Vertex.generate(r, g, b, a, x, y, d)
+                        for _ in xrange(3))
 
-    @classmethod
-    def read(cls, f):
-        bytes = struct.unpack("!BBBBBBBBBBBB", f.read(12))
-        return Triangle(bytes)
+    @staticmethod
+    def read(f):
+        return Triangle(Vertex.read(f) for _ in xrange(3))
 
     def write(self, f):
-        f.write(struct.pack("!BBBBBBBBBBBB", *self.__bytes))
+        for vertex in self.__vertices:
+            vertex.write(f)
             
     def mutate(self):
-        mutate_func = random.choice([self.__mutate_color,
-                                     self.__mutate_vertex])
-        return mutate_func()
-    
-    def __mutate_color(self):
-        bytes = list(self.__bytes)
-        i = random.randrange(3) * 4
-        rgba = list(divmod(bytes[i], 16) + divmod(bytes[i + 1], 16))
-        d = 1 << random.randrange(4)
-        j = random.randrange(4)
-        rgba[j] += random.choice([-1, 1]) * random.randrange(d)
-        rgba[j] = clamp_half_byte(rgba[j])
-        bytes[i] = rgba[0] * 16 + rgba[1]
-        bytes[i + 1] = rgba[2] * 16 + rgba[3]
-        return Triangle(bytes)
-
-    def __mutate_vertex(self):
-        bytes = list(self.__bytes)
-        i = random.randrange(3) * 4
-        d = 1 << random.randrange(8)
-        for j in xrange(i + 2, i + 4):
-            bytes[j] += random.choice([-1, 1]) * random.randrange(d)
-            bytes[j] = clamp_byte(bytes[j])
-        return Triangle(bytes)
+        vertices = list(self.__vertices)
+        i = random.randrange(len(vertices))
+        vertices[i] = vertices[i].mutate()
+        return Triangle(vertices)
