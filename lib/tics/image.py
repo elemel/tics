@@ -27,13 +27,13 @@ from tics.triangle import Triangle
 
 class Image(object):
     def __init__(self, (width, height), triangles):
-        self.width = width
-        self.height = height
-        self.triangles = tuple(triangles)
+        self.__width = width
+        self.__height = height
+        self.__triangles = tuple(triangles)
 
     def draw(self):
         glBegin(GL_TRIANGLES)
-        for triangle in self.triangles:
+        for triangle in self.__triangles:
             triangle.draw()
         glEnd()
 
@@ -57,9 +57,9 @@ class Image(object):
             f.close()
 
     def write(self, f):
-        f.write(struct.pack("!HHH", self.width, self.height,
-                            len(self.triangles)))
-        for triangle in self.triangles:
+        f.write(struct.pack("!HHH", self.__width, self.__height,
+                            len(self.__triangles)))
+        for triangle in self.__triangles:
             triangle.write(f)
 
     def save(self, path):
@@ -71,25 +71,25 @@ class Image(object):
 
     def mutate(self):
         if random.random() < 0.5:
-            triangles = list(self.triangles)
+            triangles = list(self.__triangles)
             i = random.randrange(len(triangles))
             triangles[i] = triangles[i].mutate()
-            return Image((self.width, self.height), triangles)
+            return Image((self.__width, self.__height), triangles)
         else:
             mutate_func = random.choice([self.__move_triangle,
                                          self.__replace_triangle])
             return mutate_func()
 
     def __move_triangle(self):
-        triangles = list(self.triangles)
+        triangles = list(self.__triangles)
         i = random.randrange(len(triangles))
         j = random.randrange(len(triangles))
         triangle = triangles.pop(i)
         triangles.insert(j, triangle)
-        return Image((self.width, self.height), triangles)
+        return Image((self.__width, self.__height), triangles)
 
     def __replace_triangle(self):
-        triangles = list(self.triangles)
+        triangles = list(self.__triangles)
         i = random.randrange(len(triangles))
         if random.random() < 0.5:
             j = len(triangles)
@@ -97,4 +97,4 @@ class Image(object):
             j = random.randrange(len(triangles))
         triangles.pop(i)
         triangles.insert(j, Triangle.generate())
-        return Image((self.width, self.height), triangles)
+        return Image((self.__width, self.__height), triangles)
