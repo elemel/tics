@@ -55,7 +55,6 @@ def main():
     pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF)
     pygame.display.set_caption("tics: %s" % os.path.basename(source_path))
     init_opengl()
-    parent = Image.load(target_path)
     try:
         parent = Image.load(target_path)
     except:
