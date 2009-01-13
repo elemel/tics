@@ -75,7 +75,6 @@ def main():
             parent_fitness = child_fitness
             log("generation = %d, fitness = %f" % (generation, parent_fitness))
         generation += 1
-    parent.save(target_path)
     try:
         parent.save(target_path)
     except:
