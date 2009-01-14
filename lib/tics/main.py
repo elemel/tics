@@ -67,13 +67,13 @@ def main():
     generation = 0
     log("generation = %d, fitness = %f" % (generation, parent_fitness))
     while not poll_quit():
+        generation += 1
         child = parent.mutate()
         child_fitness = environment.fitness(child)
         if child_fitness < parent_fitness:
             parent = child
             parent_fitness = child_fitness
             log("generation = %d, fitness = %f" % (generation, parent_fitness))
-        generation += 1
     try:
         parent.save(target_path)
     except:
