@@ -41,7 +41,7 @@ class Environment(object):
                 for c in color[:3]:
                     goal[i] = c
                     i += 1
-        self.__goal = numpy.array(goal, numpy.int)
+        self.__goal = numpy.array(goal, numpy.long)
         self.__display = numpy.ndarray(byte_count, numpy.ubyte)
         self.__width = width
         self.__height = height
@@ -62,4 +62,4 @@ class Environment(object):
         glPixelStorei(GL_PACK_ALIGNMENT, 1)
         gl_dll.glReadPixels(0, 0, self.__width, self.__height, int(GL_RGB),
                             int(GL_UNSIGNED_BYTE), self.__display.ctypes)
-        return numpy.square(numpy.subtract(self.__display, self.__goal)).mean()
+        return numpy.square(numpy.subtract(self.__display, self.__goal)).sum()

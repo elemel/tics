@@ -65,7 +65,7 @@ def main():
         parent = Image.generate(environment.resolution, 256)
     parent_fitness = environment.fitness(parent)
     generation = 0
-    log("generation = %d, fitness = %f" % (generation, parent_fitness))
+    log("generation = %s, fitness = %s" % (generation, parent_fitness))
     while not poll_quit():
         generation += 1
         child = parent.mutate()
@@ -73,7 +73,7 @@ def main():
         if child_fitness < parent_fitness:
             parent = child
             parent_fitness = child_fitness
-            log("generation = %d, fitness = %f" % (generation, parent_fitness))
+            log("generation = %s, fitness = %s" % (generation, parent_fitness))
     try:
         parent.save(target_path)
     except:
