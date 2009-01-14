@@ -26,12 +26,6 @@ from OpenGL.GL import *
 
 gl_dll = ctypes.cdll.LoadLibrary("libGL.so")
 
-try:
-    tics_dll = ctypes.cdll.LoadLibrary("libtics.so")
-    tics_dll.fitness.restype = ctypes.c_double
-except:
-    tics_dll = None
-
 class Environment(object):
     def __init__(self, surface):
         surface = surface.convert(24)
@@ -47,8 +41,8 @@ class Environment(object):
                 for c in color[:3]:
                     goal[i] = c
                     i += 1
-        self.__goal = goal
-        self.__display = ByteArray()
+        self.__goal = numpy.array(goal, numpy.int)
+        self.__display = numpy.ndarray(byte_count, numpy.ubyte)
         self.__width = width
         self.__height = height
 
@@ -65,10 +59,7 @@ class Environment(object):
         glClear(GL_COLOR_BUFFER_BIT)
         image.draw()
         pygame.display.flip()
-        gl_dll.glPixelStorei(int(GL_PACK_ALIGNMENT), 1)
+        glPixelStorei(GL_PACK_ALIGNMENT, 1)
         gl_dll.glReadPixels(0, 0, self.__width, self.__height, int(GL_RGB),
-                            int(GL_UNSIGNED_BYTE), self.__display)
-        if tics_dll:
-            return tics_dll.fitness(self.__display, len(self.__display),
-                                    self.__goal)
+                            int(GL_UNSIGNED_BYTE), self.__display.ctypes)
         return numpy.square(numpy.subtract(self.__display, self.__goal)).mean()
