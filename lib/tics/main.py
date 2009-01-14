@@ -21,11 +21,16 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-import sys, os, numpy, random
+import sys, os, numpy, random, pygame
 from pygame.locals import *
-from tics.graphics import *
-from tics.image import *
-from tics.c_fitness import fitness
+from OpenGL.GL import *
+from tics.environment import Environment
+from tics.image import Image
+
+def init_opengl():
+    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 def log(message):
     sys.stderr.write("tics: %s\n" % message)
@@ -46,31 +51,24 @@ def main():
     target_path = "%s.tics" % os.path.splitext(source_path)[0]
     pygame.init()
     try:
-        source_surface = pygame.image.load(source_path).convert(32)
-        source_surface = pygame.transform.flip(source_surface, False, True)
+        environment = Environment.load(source_path)
     except:
         log("could not load source file: %s" % source_path)
         sys.exit(1)
-    resolution = source_surface.get_size()
-    source_bytes = bytes_from_surface(source_surface)
-    pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF | SWSURFACE)
+    pygame.display.set_mode(environment.resolution,
+                            OPENGL | DOUBLEBUF | SWSURFACE)
     pygame.display.set_caption("tics: %s" % os.path.basename(source_path))
     init_opengl()
     try:
         parent = Image.load(target_path)
     except:
-        parent = Image.generate(resolution, 256)
-    bytes = alloc_bytes(resolution)
-    update_display(parent)
-    bytes_from_display(resolution, bytes)
-    parent_fitness = fitness(bytes, source_bytes)
+        parent = Image.generate(environment.resolution, 256)
+    parent_fitness = environment.fitness(parent)
     generation = 0
     log("generation = %d, fitness = %f" % (generation, parent_fitness))
     while not poll_quit():
         child = parent.mutate()
-        update_display(child)
-        bytes_from_display(resolution, bytes)
-        child_fitness = fitness(bytes, source_bytes)
+        child_fitness = environment.fitness(child)
         if child_fitness < parent_fitness:
             parent = child
             parent_fitness = child_fitness

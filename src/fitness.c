@@ -30,7 +30,7 @@ double fitness(unsigned char *a, int n, unsigned char *b)
 
     f = 0;
     for (i = 0; i != n; ++i) {
-        d = a[i] - b[i];
+        d = ((int) a[i]) - ((int) b[i]);
         f += d * d;
     }
     return f / n;
