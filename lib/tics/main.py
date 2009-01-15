@@ -21,7 +21,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-import sys, os, numpy, random, pygame
+import sys, os, numpy, random, pygame, getopt
 from pygame.locals import *
 from OpenGL.GL import *
 from tics.environment import Environment
@@ -43,12 +43,18 @@ def poll_quit():
     return False
 
 def main():
+    triangle_count = 256
     args = sys.argv[1:]
+    opts, args = getopt.getopt(args, "n:", ["count="])
+    for opt, value in opts:
+        if opt in ("-n", "--count"):
+            triangle_count = int(value)
     if len(args) != 1:
         log("missing file operand")
         sys.exit(1)
     source_path = args[0]
     target_path = "%s.tics" % os.path.splitext(source_path)[0]
+
     pygame.init()
     try:
         environment = Environment.load(source_path)
@@ -62,7 +68,7 @@ def main():
     try:
         parent = Image.load(target_path)
     except:
-        parent = Image.generate(environment.resolution, 256)
+        parent = Image.generate(environment.resolution, triangle_count)
     parent_fitness = environment.fitness(parent)
     generation = 0
     log("generation = %s, fitness = %s" % (generation, parent_fitness))
