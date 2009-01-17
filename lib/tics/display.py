@@ -21,39 +21,28 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-import pygame, ctypes, numpy
-from tics.display import Display
+import numpy, pygame
+from OpenGL.GL import *
 
-class Environment(object):
-    def __init__(self, surface):
-        surface = surface.convert(24)
-        surface = pygame.transform.flip(surface, False, True)
-        width, height = surface.get_size()
-        byte_count = width * height * 3
-        ByteArray = ctypes.c_ubyte * byte_count
-        goal = ByteArray()
-        i = 0
-        for y in xrange(height):
-            for x in xrange(width):
-                color = surface.get_at((x, y))
-                for c in color[:3]:
-                    goal[i] = c
-                    i += 1
-        self.__goal = numpy.array(goal, numpy.long)
+class Display(object):
+    def __init__(self, (width, height)):
         self.__width = width
         self.__height = height
-        self.__display = Display((width, height))
 
-    @property
-    def resolution(self):
-        return self.__width, self.__height
+    def draw_image(self, image):
+        glClearColor(0.0, 0.0, 0.0, 0.0)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glClear(GL_COLOR_BUFFER_BIT)
+        image.draw()
+        pygame.display.flip()
 
-    @staticmethod
-    def load(path):
-        surface = pygame.image.load(path)
-        return Environment(surface)
-        
-    def fitness(self, image):
-        self.__display.draw_image(image)
-        pixels = self.__display.read_pixels()
-        return numpy.square(numpy.subtract(pixels, self.__goal)).sum()
+    def read_pixels(self):
+        glPixelStorei(GL_PACK_ALIGNMENT, 1)
+        glPixelStorei(GL_PACK_SKIP_PIXELS, 0)
+        glPixelStorei(GL_PACK_SKIP_ROWS, 0)
+        glPixelStorei(GL_PACK_SKIP_IMAGES, 0)
+        glPixelStorei(GL_PACK_ROW_LENGTH, self.__width)
+        glPixelStorei(GL_PACK_IMAGE_HEIGHT, self.__height)
+        pixels = glReadPixelsub(0, 0, self.__width, self.__height, GL_RGB)
+        return numpy.array(pixels.flat)

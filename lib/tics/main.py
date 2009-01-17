@@ -27,11 +27,6 @@ from OpenGL.GL import *
 from tics.environment import Environment
 from tics.image import Image
 
-def init_opengl():
-    glClearColor(0.0, 0.0, 0.0, 0.0)
-    glEnable(GL_BLEND)
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
 def log(message):
     sys.stderr.write("tics: %s\n" % message)
 
@@ -52,7 +47,6 @@ def evolve(source_path, target_path, triangle_count):
     pygame.display.set_mode(environment.resolution,
                             OPENGL | DOUBLEBUF | SWSURFACE)
     pygame.display.set_caption("tics: %s" % os.path.basename(source_path))
-    init_opengl()
     try:
         parent = Image.load(target_path)
     except:
