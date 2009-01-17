@@ -24,21 +24,28 @@
 import sys, os, numpy, random, pygame, getopt
 from pygame.locals import *
 from OpenGL.GL import *
+from tics.display import Display
 from tics.environment import Environment
 from tics.image import Image
 
 def log(message):
     sys.stderr.write("tics: %s\n" % message)
 
+def is_quit_event(event):
+    return (event.type == QUIT or
+           (event.type == KEYDOWN and event.key == K_ESCAPE))
+
 def poll_quit():
     for event in pygame.event.get():
-        if (event.type == QUIT or
-            (event.type == KEYDOWN and event.key == K_ESCAPE)):
+        if is_quit_event(event):
             return True
     return False
 
+def wait_quit():
+    event = pygame.event.wait()
+    return is_quit_event(event) or poll_quit()
+
 def evolve(source_path, target_path, triangle_count):
-    pygame.init()
     try:
         environment = Environment.load(source_path)
     except:
@@ -80,7 +87,21 @@ def main():
         sys.exit(1)
     source_path = args[0]
     target_path = "%s.tics" % os.path.splitext(source_path)[0]
-    evolve(source_path, target_path, triangle_count)
+    pygame.init()
+    if source_path == target_path:
+        try:
+            image = Image.load(target_path)
+        except:
+            log("could not load file: %s" % source_path)
+            sys.exit(1)
+        pygame.display.set_mode(image.resolution,
+                                OPENGL | DOUBLEBUF | SWSURFACE)
+        pygame.display.set_caption("tics: %s" % os.path.basename(target_path))
+        display = Display(image.resolution)
+        while not wait_quit():
+            display.draw_image(image)
+    else:
+        evolve(source_path, target_path, triangle_count)
 
 if __name__ == '__main__':
     main()

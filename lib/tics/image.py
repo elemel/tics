@@ -31,6 +31,10 @@ class Image(object):
         self.__height = height
         self.__triangles = tuple(triangles)
 
+    @property
+    def resolution(self):
+        return self.__width, self.__height
+
     def draw(self):
         glBegin(GL_TRIANGLES)
         for triangle in self.__triangles:
