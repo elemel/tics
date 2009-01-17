@@ -24,8 +24,6 @@
 import pygame, ctypes, numpy
 from OpenGL.GL import *
 
-gl_dll = ctypes.cdll.LoadLibrary("libGL.so")
-
 class Environment(object):
     def __init__(self, surface):
         surface = surface.convert(24)
@@ -42,7 +40,6 @@ class Environment(object):
                     goal[i] = c
                     i += 1
         self.__goal = numpy.array(goal, numpy.long)
-        self.__display = numpy.ndarray(byte_count, numpy.ubyte)
         self.__width = width
         self.__height = height
 
@@ -59,7 +56,14 @@ class Environment(object):
         glClear(GL_COLOR_BUFFER_BIT)
         image.draw()
         pygame.display.flip()
+        
         glPixelStorei(GL_PACK_ALIGNMENT, 1)
-        gl_dll.glReadPixels(0, 0, self.__width, self.__height, int(GL_RGB),
-                            int(GL_UNSIGNED_BYTE), self.__display.ctypes)
-        return numpy.square(numpy.subtract(self.__display, self.__goal)).sum()
+        glPixelStorei(GL_PACK_SKIP_PIXELS, 0)
+        glPixelStorei(GL_PACK_SKIP_ROWS, 0)
+        glPixelStorei(GL_PACK_SKIP_IMAGES, 0)
+        glPixelStorei(GL_PACK_ROW_LENGTH, self.__width)
+        glPixelStorei(GL_PACK_IMAGE_HEIGHT, self.__height)
+        pixels = glReadPixelsub(0, 0, self.__width, self.__height, GL_RGB)
+
+        pixels = numpy.array(pixels.flat)
+        return numpy.square(numpy.subtract(pixels, self.__goal)).sum()
