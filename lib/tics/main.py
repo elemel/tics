@@ -77,11 +77,17 @@ def evolve(source_path, target_path, triangle_count):
 
 def main():
     triangle_count = 256
+    zoom = 1.0
     args = sys.argv[1:]
-    opts, args = getopt.getopt(args, "n:", ["count="])
+    opts, args = getopt.getopt(args, "n:z:", ["count=", "zoom="])
     for opt, value in opts:
         if opt in ("-n", "--count"):
             triangle_count = int(value)
+        if opt in ("-z", "--zoom"):
+            if value[-1] == "%":
+                zoom = float(value[:-1]) / 100.0
+            else:
+                zoom = float(value)
     if len(args) != 1:
         log("missing file operand")
         sys.exit(1)
@@ -94,10 +100,11 @@ def main():
         except:
             log("could not load file: %s" % source_path)
             sys.exit(1)
-        pygame.display.set_mode(image.resolution,
-                                OPENGL | DOUBLEBUF | SWSURFACE)
+        width, height = image.resolution
+        resolution = int(round(width * zoom)), int(round(height * zoom))
+        pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF | SWSURFACE)
         pygame.display.set_caption("tics: %s" % os.path.basename(target_path))
-        display = Display(image.resolution)
+        display = Display(resolution)
         while not wait_quit():
             display.draw_image(image)
     else:
