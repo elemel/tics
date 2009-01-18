@@ -60,5 +60,6 @@ class Display(object):
         pygame.display.flip()
 
     def read_pixels(self):
+        glFinish()
         pixels = glReadPixelsub(0, 0, self.__width, self.__height, GL_RGB)
         return numpy.array(pixels.flat)
