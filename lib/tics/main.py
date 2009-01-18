@@ -47,13 +47,14 @@ def wait_quit():
 
 def evolve(source_path, target_path, triangle_count):
     try:
-        environment = Environment.load(source_path)
+        surface = pygame.image.load(source_path)
     except:
         log("could not load source file: %s" % source_path)
         sys.exit(1)
-    pygame.display.set_mode(environment.resolution,
-                            OPENGL | DOUBLEBUF | SWSURFACE)
-    pygame.display.set_caption("tics: %s" % os.path.basename(source_path))
+    width, height = surface.get_size()
+    display = Display((width, height))
+    display.caption = os.path.basename(source_path)
+    environment = Environment(surface, display)
     try:
         parent = Image.load(target_path)
     except:
@@ -83,9 +84,8 @@ def view(path, zoom):
         sys.exit(1)
     width, height = image.resolution
     resolution = int(round(width * zoom)), int(round(height * zoom))
-    pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF | SWSURFACE)
-    pygame.display.set_caption("tics: %s" % os.path.basename(path))
     display = Display(resolution)
+    display.caption = os.path.basename(path)
     while not wait_quit():
         display.draw_image(image)
 

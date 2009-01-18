@@ -25,10 +25,13 @@ import pygame, ctypes, numpy
 from tics.display import Display
 
 class Environment(object):
-    def __init__(self, surface):
+    def __init__(self, surface, display):
+        width, height = surface.get_size()
+        self.__width = width
+        self.__height = height
+        self.__display = display
         surface = surface.convert(24)
         surface = pygame.transform.flip(surface, False, True)
-        width, height = surface.get_size()
         byte_count = width * height * 3
         ByteArray = ctypes.c_ubyte * byte_count
         goal = ByteArray()
@@ -40,19 +43,7 @@ class Environment(object):
                     goal[i] = c
                     i += 1
         self.__goal = numpy.array(goal, numpy.long)
-        self.__width = width
-        self.__height = height
-        self.__display = Display((width, height))
 
-    @property
-    def resolution(self):
-        return self.__width, self.__height
-
-    @staticmethod
-    def load(path):
-        surface = pygame.image.load(path)
-        return Environment(surface)
-        
     def fitness(self, image):
         self.__display.draw_image(image)
         pixels = self.__display.read_pixels()
