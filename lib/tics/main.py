@@ -75,6 +75,20 @@ def evolve(source_path, target_path, triangle_count):
         log("could not save target file: %s" % target_path)
         sys.exit(1)
 
+def view(path, zoom):
+    try:
+        image = Image.load(path)
+    except:
+        log("could not load file: %s" % path)
+        sys.exit(1)
+    width, height = image.resolution
+    resolution = int(round(width * zoom)), int(round(height * zoom))
+    pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF | SWSURFACE)
+    pygame.display.set_caption("tics: %s" % os.path.basename(path))
+    display = Display(resolution)
+    while not wait_quit():
+        display.draw_image(image)
+
 def main():
     triangle_count = 256
     zoom = 1.0
@@ -95,18 +109,7 @@ def main():
     target_path = "%s.tics" % os.path.splitext(source_path)[0]
     pygame.init()
     if source_path == target_path:
-        try:
-            image = Image.load(target_path)
-        except:
-            log("could not load file: %s" % source_path)
-            sys.exit(1)
-        width, height = image.resolution
-        resolution = int(round(width * zoom)), int(round(height * zoom))
-        pygame.display.set_mode(resolution, OPENGL | DOUBLEBUF | SWSURFACE)
-        pygame.display.set_caption("tics: %s" % os.path.basename(target_path))
-        display = Display(resolution)
-        while not wait_quit():
-            display.draw_image(image)
+        view(source_path, zoom)
     else:
         evolve(source_path, target_path, triangle_count)
 
