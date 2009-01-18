@@ -26,12 +26,12 @@ from pygame.locals import *
 from OpenGL.GL import *
 
 class Display(object):
-    def __init__(self, (width, height)):
+    def __init__(self, (width, height), caption):
         self.__width = width
         self.__height = height
         pygame.display.set_mode((width, height),
                                 OPENGL | DOUBLEBUF | SWSURFACE)
-        self.caption = ""
+        pygame.display.set_caption("%s - tics" % caption)
         glClearColor(0.0, 0.0, 0.0, 0.0)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -41,18 +41,6 @@ class Display(object):
         glPixelStorei(GL_PACK_SKIP_IMAGES, 0)
         glPixelStorei(GL_PACK_ROW_LENGTH, self.__width)
         glPixelStorei(GL_PACK_IMAGE_HEIGHT, self.__height)
-
-    def __get_caption(self):
-        return self.__caption
-
-    def __set_caption(self, caption):
-        self.__caption = caption
-        if caption:
-            pygame.display.set_caption("%s - tics" % caption)
-        else:
-            pygame.display.set_caption("tics")
-
-    caption = property(__get_caption, __set_caption)
 
     def draw_image(self, image):
         glClear(GL_COLOR_BUFFER_BIT)

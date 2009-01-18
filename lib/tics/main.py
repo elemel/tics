@@ -52,8 +52,7 @@ def evolve(source_path, target_path, triangle_count):
         log("could not load source file: %s" % source_path)
         sys.exit(1)
     width, height = surface.get_size()
-    display = Display((width, height))
-    display.caption = os.path.basename(source_path)
+    display = Display((width, height), os.path.basename(source_path))
     environment = Environment(surface, display)
     try:
         parent = Image.load(target_path)
@@ -84,8 +83,7 @@ def view(path, zoom):
         sys.exit(1)
     width, height = image.resolution
     resolution = int(round(width * zoom)), int(round(height * zoom))
-    display = Display(resolution)
-    display.caption = os.path.basename(path)
+    display = Display(resolution, os.path.basename(path))
     while not wait_quit():
         display.draw_image(image)
 
