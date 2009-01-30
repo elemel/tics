@@ -57,7 +57,7 @@ def evolve(source_path, target_path, triangle_count):
     try:
         parent = Image.load(target_path)
     except:
-        parent = Image.generate(environment.resolution, triangle_count)
+        parent = Image.generate((width, height), triangle_count)
     parent_fitness = environment.fitness(parent)
     generation = 0
     log("generation = %s, fitness = %s" % (generation, parent_fitness))
