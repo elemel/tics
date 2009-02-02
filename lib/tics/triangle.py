@@ -34,6 +34,12 @@ class Triangle(object):
 
     @staticmethod
     def generate():
+        """Generate a triangle.
+
+        Generate the three vertices at a maximum distance d from a central
+        point (x, y). This strategy yields a greater ratio of small triangles
+        than does independent vertex generation.
+        """
         r, g, b = [random.randrange(16) for _ in xrange(3)]
         a = random.randrange(8)
         x, y = [random.randrange(256) for _ in xrange(2)]
